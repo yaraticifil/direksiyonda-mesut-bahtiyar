@@ -262,13 +262,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             Expanded(
               child: _buildActionButton(
+                'ACİL AVUKAT',
+                Icons.gavel,
+                Colors.red,
+                () => authController.launchEmergencySupport(),
+              ),
+            ),
+            const SizedBox(width: 15),
+            Expanded(
+              child: _buildActionButton(
                 'Request Payout',
                 Icons.request_quote,
                 Colors.green,
                 () => Get.to(() => const PayoutRequestScreen()),
               ),
             ),
-            const SizedBox(width: 15),
+          ],
+        ),
+        const SizedBox(height: 15),
+        Row(
+          children: [
             Expanded(
               child: _buildActionButton(
                 'Payout History',
@@ -277,6 +290,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 () => Get.to(() => const PayoutHistoryScreen()),
               ),
             ),
+            const Expanded(child: SizedBox()), // Placeholder for balance
           ],
         ),
       ],
