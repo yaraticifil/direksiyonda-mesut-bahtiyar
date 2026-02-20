@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import '../models/driver_model.dart';
 import '../models/payout_model.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
+import 'package:path/path.dart' as path;
 
 class DriverController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -25,6 +28,43 @@ class DriverController extends GetxController {
       }
     } catch (e) {
       print("Sürücü hatası: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> reportPenalty({
+    required File image,
+    required String description,
+    required double latitude,
+    required double longitude,
+  }) async {
+    isLoading.value = true;
+    try {
+      final String driverId = driver.value?.id ?? 'unknown';
+      final String fileName = '${DateTime.now().millisecondsSinceEpoch}${path.extension(image.path)}';
+      final Reference storageRef = FirebaseStorage.instance.ref().child('penalties/$driverId/$fileName');
+
+      // Upload file
+      final UploadTask uploadTask = storageRef.putFile(image);
+      final TaskSnapshot snapshot = await uploadTask;
+      final String downloadUrl = await snapshot.ref.getDownloadURL();
+
+      // Save to Firestore
+      await _firestore.collection('penalties').add({
+        'driverId': driverId,
+        'driverName': driver.value?.name ?? 'Anonim',
+        'imageUrl': downloadUrl,
+        'description': description,
+        'latitude': latitude,
+        'longitude': longitude,
+        'status': 'pending',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      Get.snackbar("Başarılı", "Ceza bildirimi avukatlarımıza iletildi.");
+    } catch (e) {
+      Get.snackbar("Hata", "Bildirim gönderilemedi: $e");
     } finally {
       isLoading.value = false;
     }

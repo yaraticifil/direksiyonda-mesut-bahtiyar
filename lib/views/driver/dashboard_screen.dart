@@ -271,10 +271,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(width: 15),
             Expanded(
               child: _buildActionButton(
-                'Request Payout',
-                Icons.request_quote,
-                Colors.green,
-                () => Get.to(() => const PayoutRequestScreen()),
+                'CEZA BİLDİR',
+                Icons.report_problem,
+                Colors.orange[900]!,
+                () => Get.toNamed('/report-penalty'),
               ),
             ),
           ],
@@ -284,13 +284,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             Expanded(
               child: _buildActionButton(
-                'Payout History',
+                'PARA ÇEK',
+                Icons.request_quote,
+                Colors.green,
+                () => Get.to(() => const PayoutRequestScreen()),
+              ),
+            ),
+            const SizedBox(width: 15),
+            Expanded(
+              child: _buildActionButton(
+                'GEÇMİŞ',
                 Icons.history,
                 Colors.purple,
                 () => Get.to(() => const PayoutHistoryScreen()),
               ),
             ),
-            const Expanded(child: SizedBox()), // Placeholder for balance
+          ],
+        ),
+        const SizedBox(height: 15),
+        Row(
+          children: [
+            Expanded(
+              child: _buildActionButton(
+                'DİJİTAL KİMLİK',
+                Icons.qr_code,
+                Colors.blue,
+                () => Get.toNamed('/digital-id'),
+              ),
+            ),
+            Expanded(
+              child: _buildActionButton(
+                'SÖZLEŞME İBRAZ',
+                Icons.description,
+                Colors.blueGrey,
+                () => Get.toNamed('/legal-contract'),
+              ),
+            ),
           ],
         ),
       ],

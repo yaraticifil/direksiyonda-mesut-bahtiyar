@@ -9,6 +9,9 @@ import '../views/admin/admin_dashboard_screen.dart';
 import '../bindings/auth_binding.dart';
 import '../bindings/driver_binding.dart';
 import '../bindings/admin_binding.dart';
+import '../views/driver/digital_id_screen.dart';
+import '../views/driver/legal_contract_screen.dart';
+import '../views/driver/penalty_report_screen.dart';
 
 class AppPages {
   static const INITIAL = '/';
@@ -48,6 +51,21 @@ class AppPages {
       name: '/admin-dashboard',
       page: () => const AdminDashboardScreen(),
       binding: AdminBinding(),
+    ),
+    GetPage(
+      name: '/digital-id',
+      page: () => const DigitalIdScreen(),
+      binding: DriverBinding(),
+    ),
+    GetPage(
+      name: '/legal-contract',
+      page: () => const LegalContractScreen(),
+      binding: DriverBinding(),
+    ),
+    GetPage(
+      name: '/report-penalty',
+      page: () => const PenaltyReportScreen(),
+      binding: DriverBinding(),
     ),
   ];
 }
