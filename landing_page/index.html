@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ortak Yol - Sürücü ve Yolcu Dostu</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="assets/icon.png">
+</head>
+<body>
+    <div class="overlay"></div>
+    
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="assets/icon.png" alt="Ortak Yol Logo">
+                <span>Ortak Yol</span>
+            </div>
+            <!-- <ul class="nav-links">
+                <li><a href="#features">Özellikler</a></li>
+                <li><a href="#download" class="btn-nav">İndir</a></li>
+            </ul> -->
+        </nav>
+    </header>
+
+    <main class="hero">
+        <div class="hero-content">
+            <div class="badge">Yeni Sürüm Yayında</div>
+            <h1>Ortak Yol</h1>
+            <p class="tagline">Sürücüyü Koruyan, Yolcuyu Güvenceye Alan <br> Teknolojik Ulaşım Altyapısı</p>
+            
+            <div class="download-buttons" id="download">
+                <a href="OrtakYol.apk" class="btn-download android" download>
+                    <i class="fab fa-android"></i>
+                    <div class="btn-text">
+                        <small>Android İçin</small>
+                        <span>Hemen İndir</span>
+                    </div>
+                </a>
+                
+                <a href="#" class="btn-download ios disabled" onclick="alert('iOS versiyonumuz çok yakında App Store\'da!'); return false;">
+                    <i class="fab fa-apple"></i>
+                    <div class="btn-text">
+                        <small>iOS İçin</small>
+                        <span>App Store</span>
+                    </div>
+                </a>
+            </div>
+            <p class="version-info">Versiyon 1.0.0 • Android 5.0+</p>
+        </div>
+        
+        <div class="hero-image">
+             <img src="assets/icon.png" alt="App Preview" class="app-mockup">
+        </div>
+    </main>
+
+    <section id="features" class="features">
+        <div class="feature-card">
+            <i class="fas fa-shield-alt"></i>
+            <h3>Güvenli Yolculuk</h3>
+            <p>Her anınızda yanınızdayız. Gelişmiş güvenlik önlemleriyle huzurlu seyahat edin.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-bolt"></i>
+            <h3>Hızlı ve Pratik</h3>
+            <p>Saniyeler içinde araç çağırın veya yolcu bulun. Zamanınız size kalsın.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-wallet"></i>
+            <h3>Adil Fiyatlandırma</h3>
+            <p>Hem sürücü hem yolcu için en adil fiyatlar. Sürpriz ücret yok.</p>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Ortak Yol. Tüm hakları saklıdır.</p>
+        <div class="social-links">
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+        </div>
+    </footer>
+</body>
+</html>
