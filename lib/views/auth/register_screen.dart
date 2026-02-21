@@ -19,6 +19,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
 
+  bool isDriver = true; // true = sürücü, false = yolcu
   int adminTapCount = 0;
   DateTime? lastTapTime;
 
@@ -72,12 +73,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    authController.registerDriver(
-      nameController.text.trim(),
-      emailController.text.trim(),
-      passwordController.text,
-      phoneController.text.trim(),
-    );
+    if (isDriver) {
+      authController.registerDriver(
+        nameController.text.trim(),
+        emailController.text.trim(),
+        passwordController.text,
+        phoneController.text.trim(),
+      );
+    } else {
+      authController.registerPassenger(
+        nameController.text.trim(),
+        emailController.text.trim(),
+        passwordController.text,
+        phoneController.text.trim(),
+      );
+    }
   }
 
   @override
@@ -105,13 +115,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Column(
                       children: [
                         const Icon(
-                          Icons.person_add,
+                          Icons.handshake,
                           size: 50,
                           color: Color(0xFFFFD700),
                         ),
                         const SizedBox(height: 15),
                         const Text(
-                          'ARAMIZA KATIL',
+                          'ORTAK YOL',
                           style: TextStyle(
                             fontSize: 26,
                             fontWeight: FontWeight.w900,
@@ -121,7 +131,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Direksiyonu tutan el, hakkını da tutsun.',
+                          'Yolculuğa başla, birlikte güçlüyüz.',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[400],
@@ -132,7 +142,123 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 25),
+
+                // ROL SEÇİMİ
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2C2C2C),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: const Color(0xFFFFD700).withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => setState(() => isDriver = true),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            decoration: BoxDecoration(
+                              color: isDriver
+                                  ? const Color(0xFFFFD700)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(13),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.directions_car,
+                                  size: 20,
+                                  color: isDriver ? Colors.black : Colors.grey[500],
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'SÜRÜCÜYÜM',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 13,
+                                    color: isDriver ? Colors.black : Colors.grey[500],
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => setState(() => isDriver = false),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            decoration: BoxDecoration(
+                              color: !isDriver
+                                  ? const Color(0xFFFFD700)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(13),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.person,
+                                  size: 20,
+                                  color: !isDriver ? Colors.black : Colors.grey[500],
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'YOLCUYUM',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 13,
+                                    color: !isDriver ? Colors.black : Colors.grey[500],
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Açıklama
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1C1C1C),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        isDriver ? Icons.shield : Icons.map,
+                        color: const Color(0xFFFFD700),
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          isDriver
+                              ? 'Sigortalı sürücü olarak platforma katıl, hukuki güvence altında çalış.'
+                              : 'Güvenli ve uygun fiyatlı yolculuk için hemen kayıt ol.',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+
                 // Form
                 CustomTextField(
                   controller: nameController,
@@ -174,7 +300,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 30),
                 Obx(() => CustomButton(
-                  text: 'KAYIT OL',
+                  text: isDriver ? 'SÜRÜCÜ OLARAK KAYIT OL' : 'YOLCU OLARAK KAYIT OL',
                   onPressed: _register,
                   isLoading: authController.isLoading.value,
                 )),
@@ -198,8 +324,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
-                // Manifest ruhu
+                const SizedBox(height: 25),
+                // Hukuki bilgi
                 Container(
                   padding: const EdgeInsets.all(15),
                   decoration: BoxDecoration(
@@ -207,7 +333,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    '🛡️  Kaydınız, hukuki güvence kapsamında korunur.\nBu platform bir suç örgütü değil, bir emek hareketidir.',
+                    isDriver
+                        ? '🛡️  Kaydınız, hukuki güvence kapsamında korunur.\nBu platform bir suç örgütü değil, bir emek hareketidir.'
+                        : '🚗  Yolculuklarınız kısa süreli araç kiralama sözleşmesi\nkapsamında hukuki güvence altındadır.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 11,

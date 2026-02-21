@@ -34,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    authController.loginDriver(
+    authController.login(
       emailController.text.trim(),
       passwordController.text,
     );
@@ -120,6 +120,27 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: _login,
                   isLoading: authController.isLoading.value,
                 )),
+                const SizedBox(height: 12),
+                // Şifremi Unuttum
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      if (emailController.text.trim().isEmpty) {
+                        Get.snackbar('Uyarı', 'Önce e-posta adresinizi girin');
+                        return;
+                      }
+                      authController.resetPassword(emailController.text.trim());
+                    },
+                    child: const Text(
+                      'Şifremi Unuttum',
+                      style: TextStyle(
+                        color: Color(0xFFFFD700),
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 25),
                 TextButton(
                   onPressed: () => Get.offAllNamed('/register'),
