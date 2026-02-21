@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/passenger_controller.dart';
 import '../../models/ride_model.dart';
+import '../../services/ride_service.dart';
 
 class RideHistoryScreen extends StatefulWidget {
   const RideHistoryScreen({super.key});
@@ -14,13 +14,13 @@ class RideHistoryScreen extends StatefulWidget {
 
 class _RideHistoryScreenState extends State<RideHistoryScreen> {
   final AuthController authController = Get.find<AuthController>();
-  final PassengerController passengerController = Get.find<PassengerController>();
+  final PassengerController pc = Get.find<PassengerController>();
 
   @override
   void initState() {
     super.initState();
     if (authController.user != null) {
-      passengerController.fetchRideHistory(authController.user!.uid);
+      pc.fetchRideHistory(authController.user!.uid);
     }
   }
 
@@ -29,28 +29,21 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF1C1C1C),
       appBar: AppBar(
-        title: const Text('Yolculuk Geçmişi'),
         backgroundColor: const Color(0xFF1C1C1C),
-        foregroundColor: const Color(0xFFFFD700),
         elevation: 0,
+        leading: IconButton(icon: const Icon(Icons.arrow_back, color: Colors.white), onPressed: () => Get.back()),
+        title: const Text('Yolculuk Geçmişi', style: TextStyle(color: Color(0xFFFFD700), fontWeight: FontWeight.bold, fontSize: 16)),
+        centerTitle: true,
       ),
       body: Obx(() {
-        if (passengerController.rideHistory.isEmpty) {
+        if (pc.rideHistory.isEmpty) {
           return Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.directions_car_outlined, size: 60, color: Colors.grey[700]),
+                Icon(Icons.directions_car_outlined, color: Colors.grey[700], size: 60),
                 const SizedBox(height: 16),
-                Text(
-                  'Henüz yolculuk kaydınız yok',
-                  style: TextStyle(color: Colors.grey[500], fontSize: 16),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'İlk yolculuğunuzu şimdi yapın!',
-                  style: TextStyle(color: Colors.grey[600], fontSize: 13),
-                ),
+                Text('Henüz yolculuk geçmişiniz yok', style: TextStyle(color: Colors.grey[500], fontSize: 15)),
               ],
             ),
           );
@@ -58,108 +51,91 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
 
         return ListView.builder(
           padding: const EdgeInsets.all(16),
-          itemCount: passengerController.rideHistory.length,
+          itemCount: pc.rideHistory.length,
           itemBuilder: (context, index) {
-            final ride = passengerController.rideHistory[index];
-            return _buildRideCard(ride);
+            final ride = pc.rideHistory[index];
+            return _rideCard(ride);
           },
         );
       }),
     );
   }
 
-  Widget _buildRideCard(Ride ride) {
+  Widget _rideCard(Ride ride) {
+    final config = SegmentConfig.get(ride.segment);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: const Color(0xFF2C2C2C),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: _getStatusColor(ride.status).withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: Colors.grey[800]!),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Tarih ve durum
+          // Üst satır: tarih + durum + segment
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                DateFormat('dd.MM.yyyy • HH:mm').format(ride.createdAt),
-                style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                '${ride.createdAt.day.toString().padLeft(2, '0')}.${ride.createdAt.month.toString().padLeft(2, '0')}.${ride.createdAt.year} ${ride.createdAt.hour.toString().padLeft(2, '0')}:${ride.createdAt.minute.toString().padLeft(2, '0')}',
+                style: TextStyle(color: Colors.grey[500], fontSize: 11),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: _getStatusColor(ride.status).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  ride.statusText,
-                  style: TextStyle(
-                    color: _getStatusColor(ride.status),
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(color: const Color(0xFFFFD700).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(4)),
+                    child: Text('${config.icon} ${config.label}', style: const TextStyle(color: Color(0xFFFFD700), fontSize: 9)),
                   ),
-                ),
+                  const SizedBox(width: 6),
+                  _statusBadge(ride.status),
+                ],
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
 
-          // Nereden
+          // Rota
           Row(
             children: [
-              const Icon(Icons.radio_button_checked, color: Colors.green, size: 14),
+              const Icon(Icons.circle, color: Colors.green, size: 8),
               const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  ride.pickupAddress.isNotEmpty ? ride.pickupAddress : 'Başlangıç noktası',
-                  style: const TextStyle(color: Colors.white, fontSize: 13),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
+              Expanded(child: Text(ride.pickupAddress, style: const TextStyle(color: Colors.white, fontSize: 12), overflow: TextOverflow.ellipsis)),
             ],
           ),
-          Container(
-            margin: const EdgeInsets.only(left: 6),
-            height: 15,
-            width: 2,
-            color: Colors.grey[700],
+          Padding(
+            padding: const EdgeInsets.only(left: 3),
+            child: Container(width: 1, height: 12, color: Colors.grey[700]),
           ),
-          // Nereye
           Row(
             children: [
-              const Icon(Icons.location_on, color: Color(0xFFFFD700), size: 14),
+              const Icon(Icons.location_on, color: Color(0xFFFFD700), size: 8),
               const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  ride.destAddress.isNotEmpty ? ride.destAddress : 'Hedef noktası',
-                  style: const TextStyle(color: Colors.white, fontSize: 13),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
+              Expanded(child: Text(ride.destAddress, style: const TextStyle(color: Colors.white, fontSize: 12), overflow: TextOverflow.ellipsis)),
             ],
           ),
-          const SizedBox(height: 12),
+          const Divider(color: Color(0xFF444444), height: 16),
 
-          // Alt bilgiler
+          // Bilgiler
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              if (ride.distanceKm != null)
-                _infoChip(Icons.straighten, '${ride.distanceKm!.toStringAsFixed(1)} km'),
-              if (ride.durationMin != null)
-                _infoChip(Icons.timer_outlined, '${ride.durationMin} dk'),
-              Text(
-                '₺${ride.fare?.toStringAsFixed(2) ?? '—'}',
-                style: const TextStyle(
-                  color: Color(0xFFFFD700),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+              _miniInfo('Mesafe', '${ride.distanceKm.toStringAsFixed(1)} km'),
+              _miniInfo('Süre', '${ride.estimatedMinutes} dk'),
+              _miniInfo('Kişi', '${ride.personCount}'),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  if (ride.personCount > 1) Text('Toplam: ₺${ride.grossTotal.toStringAsFixed(0)}', style: TextStyle(color: Colors.grey[500], fontSize: 9)),
+                  Text(
+                    ride.personCount > 1 ? '₺${ride.perPersonFee.toStringAsFixed(0)} / kişi' : '₺${ride.grossTotal.toStringAsFixed(0)}',
+                    style: const TextStyle(color: Color(0xFFFFD700), fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  Text('Kiralama Bedeli', style: TextStyle(color: Colors.grey[600], fontSize: 9)),
+                ],
               ),
             ],
           ),
@@ -168,22 +144,33 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
     );
   }
 
-  Widget _infoChip(IconData icon, String text) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+  Widget _miniInfo(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: Colors.grey[500], size: 14),
-        const SizedBox(width: 4),
-        Text(text, style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+        Text(value, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
+        Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 10)),
       ],
     );
   }
 
-  Color _getStatusColor(RideStatus status) {
+  Widget _statusBadge(RideStatus status) {
+    Color color;
+    String text;
     switch (status) {
-      case RideStatus.completed: return Colors.green;
-      case RideStatus.cancelled: return Colors.red;
-      default: return Colors.orange;
+      case RideStatus.completed:
+        color = Colors.green; text = 'Tamamlandı'; break;
+      case RideStatus.cancelled:
+        color = Colors.red; text = 'İptal'; break;
+      case RideStatus.inProgress:
+        color = Colors.blue; text = 'Devam'; break;
+      default:
+        color = Colors.orange; text = 'Bekliyor'; break;
     }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(6)),
+      child: Text(text, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold)),
+    );
   }
 }

@@ -14,9 +14,13 @@ class PassengerController extends GetxController {
   final Rx<Ride?> currentRide = Rx<Ride?>(null);
   final RxList<Ride> rideHistory = <Ride>[].obs;
   final Rx<Position?> currentPosition = Rx<Position?>(null);
-  final RxDouble estimatedFare = 0.0.obs;
-  final RxDouble estimatedDistance = 0.0.obs;
-  final RxInt estimatedDuration = 0.obs;
+
+  // Fiyat hesaplama sonucu
+  final Rx<FareBreakdown?> fareBreakdown = Rx<FareBreakdown?>(null);
+
+  // Segment ve kişi seçimi
+  final Rx<VehicleSegment> selectedSegment = VehicleSegment.standard.obs;
+  final RxInt selectedPersonCount = 1.obs;
 
   StreamSubscription? _rideSubscription;
 
@@ -60,15 +64,39 @@ class PassengerController extends GetxController {
     }
   }
 
-  /// Tahmini ücret hesapla
+  /// Tahmini ücret hesapla — tam kırılımlı
   void calculateEstimate(double pickupLat, double pickupLng, double destLat, double destLng) {
     double distance = _rideService.calculateDistance(pickupLat, pickupLng, destLat, destLng);
-    int duration = _rideService.estimateDuration(distance);
-    double fare = _rideService.calculateFare(distance, duration);
 
-    estimatedDistance.value = distance;
-    estimatedDuration.value = duration;
-    estimatedFare.value = fare;
+    fareBreakdown.value = _rideService.calculateFare(
+      distanceKm: distance,
+      segment: selectedSegment.value,
+      personCount: selectedPersonCount.value,
+      marketRate: 1.0,
+    );
+  }
+
+  /// Segment değiştir → yeniden hesapla
+  void setSegment(VehicleSegment segment) {
+    selectedSegment.value = segment;
+    _recalculate();
+  }
+
+  /// Kişi sayısı değiştir → yeniden hesapla
+  void setPersonCount(int count) {
+    selectedPersonCount.value = count.clamp(1, 4);
+    _recalculate();
+  }
+
+  void _recalculate() {
+    if (fareBreakdown.value != null) {
+      fareBreakdown.value = _rideService.calculateFare(
+        distanceKm: fareBreakdown.value!.distanceKm,
+        segment: selectedSegment.value,
+        personCount: selectedPersonCount.value,
+        marketRate: 1.0,
+      );
+    }
   }
 
   /// Yolculuk talebi oluştur
@@ -81,9 +109,11 @@ class PassengerController extends GetxController {
     required double destLng,
     required String destAddress,
   }) async {
+    if (fareBreakdown.value == null) return;
     isLoading.value = true;
     try {
-      // Firestore'a yolculuk kaydı oluştur
+      final fb = fareBreakdown.value!;
+
       final docRef = await _firestore.collection('rides').add({
         'passengerId': passengerId,
         'pickupLat': pickupLat,
@@ -93,16 +123,26 @@ class PassengerController extends GetxController {
         'destLng': destLng,
         'destAddress': destAddress,
         'status': 'searching',
-        'fare': estimatedFare.value,
-        'distanceKm': estimatedDistance.value,
-        'durationMin': estimatedDuration.value,
+        'segment': fb.segment.name,
+        'personCount': fb.personCount,
+        'distanceKm': fb.distanceKm,
+        'estimatedMinutes': fb.estimatedMinutes,
+        'invoiceNo': fb.invoiceNo,
+        'openingFee': fb.openingFee,
+        'distanceFee': fb.distanceFee,
+        'segmentSurcharge': fb.segmentSurcharge,
+        'marketAdjustment': fb.marketAdjustment,
+        'discount': fb.discount,
+        'grossTotal': fb.grossTotal,
+        'commission': fb.commission,
+        'driverNet': fb.driverNet,
+        'perPersonFee': fb.perPersonFee,
+        'marketRate': fb.marketRate,
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      // Yolculuğu dinlemeye başla
       _listenToRide(docRef.id);
 
-      // Yakın sürücü ara
       final driverId = await _rideService.findAndMatchDriver(
         docRef.id, pickupLat, pickupLng,
       );
@@ -113,7 +153,6 @@ class PassengerController extends GetxController {
           "Yakınızda müsait sürücü yok. Lütfen tekrar deneyin.",
           duration: const Duration(seconds: 5),
         );
-        // İptal et
         await _firestore.collection('rides').doc(docRef.id).update({
           'status': 'cancelled',
         });
@@ -137,7 +176,6 @@ class PassengerController extends GetxController {
       if (snapshot.exists) {
         currentRide.value = Ride.fromFirestore(snapshot);
 
-        // Yolculuk tamamlandıysa dinlemeyi durdur
         if (currentRide.value?.status == RideStatus.completed ||
             currentRide.value?.status == RideStatus.cancelled) {
           _rideSubscription?.cancel();
@@ -161,7 +199,7 @@ class PassengerController extends GetxController {
     }
   }
 
-  /// Yolculuk geçmişini getir
+  /// Yolculuk geçmişi
   Future<void> fetchRideHistory(String passengerId) async {
     try {
       final snapshot = await _firestore
@@ -179,7 +217,7 @@ class PassengerController extends GetxController {
     }
   }
 
-  /// Aktif yolculuk var mı kontrol et
+  /// Aktif yolculuk kontrolü
   Future<void> checkActiveRide(String passengerId) async {
     try {
       final snapshot = await _firestore

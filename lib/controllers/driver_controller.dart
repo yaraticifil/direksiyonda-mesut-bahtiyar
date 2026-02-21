@@ -167,10 +167,10 @@ class DriverController extends GetxController {
       });
 
       // Kazancı payout olarak ekle
-      if (ride.fare != null) {
+      if (ride.grossTotal > 0) {
         await _firestore.collection('payouts').add({
           'driverId': driver.value?.id ?? '',
-          'amount': ride.fare,
+          'amount': ride.driverNet,
           'description': '${ride.pickupAddress} → ${ride.destAddress}',
           'status': 'completed',
           'createdAt': FieldValue.serverTimestamp(),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../services/ride_service.dart';
 
 enum RideStatus {
   searching,
@@ -22,9 +23,24 @@ class Ride {
   final double destLng;
   final String destAddress;
   final RideStatus status;
-  final double? fare;
-  final double? distanceKm;
-  final int? durationMin;
+  final VehicleSegment segment;
+  final int personCount;
+  final double distanceKm;
+  final int estimatedMinutes;
+  final String invoiceNo;
+
+  // Ücret kırılımı
+  final double openingFee;
+  final double distanceFee;
+  final double segmentSurcharge;
+  final double marketAdjustment;
+  final double discount;
+  final double grossTotal;
+  final double commission;
+  final double driverNet;
+  final double perPersonFee;
+  final double marketRate;
+
   final DateTime createdAt;
   final DateTime? startedAt;
   final DateTime? completedAt;
@@ -42,9 +58,21 @@ class Ride {
     required this.destLng,
     required this.destAddress,
     required this.status,
-    this.fare,
-    this.distanceKm,
-    this.durationMin,
+    this.segment = VehicleSegment.standard,
+    this.personCount = 1,
+    this.distanceKm = 0,
+    this.estimatedMinutes = 0,
+    this.invoiceNo = '',
+    this.openingFee = 0,
+    this.distanceFee = 0,
+    this.segmentSurcharge = 0,
+    this.marketAdjustment = 0,
+    this.discount = 0,
+    this.grossTotal = 0,
+    this.commission = 0,
+    this.driverNet = 0,
+    this.perPersonFee = 0,
+    this.marketRate = 1.0,
     required this.createdAt,
     this.startedAt,
     this.completedAt,
@@ -65,9 +93,21 @@ class Ride {
       destLng: (data['destLng'] ?? 0).toDouble(),
       destAddress: data['destAddress'] ?? '',
       status: _parseStatus(data['status']),
-      fare: data['fare']?.toDouble(),
-      distanceKm: data['distanceKm']?.toDouble(),
-      durationMin: data['durationMin'],
+      segment: _parseSegment(data['segment']),
+      personCount: data['personCount'] ?? 1,
+      distanceKm: (data['distanceKm'] ?? 0).toDouble(),
+      estimatedMinutes: data['estimatedMinutes'] ?? 0,
+      invoiceNo: data['invoiceNo'] ?? '',
+      openingFee: (data['openingFee'] ?? 0).toDouble(),
+      distanceFee: (data['distanceFee'] ?? 0).toDouble(),
+      segmentSurcharge: (data['segmentSurcharge'] ?? 0).toDouble(),
+      marketAdjustment: (data['marketAdjustment'] ?? 0).toDouble(),
+      discount: (data['discount'] ?? 0).toDouble(),
+      grossTotal: (data['grossTotal'] ?? 0).toDouble(),
+      commission: (data['commission'] ?? 0).toDouble(),
+      driverNet: (data['driverNet'] ?? 0).toDouble(),
+      perPersonFee: (data['perPersonFee'] ?? 0).toDouble(),
+      marketRate: (data['marketRate'] ?? 1.0).toDouble(),
       createdAt: _parseDate(data['createdAt']),
       startedAt: data['startedAt'] != null ? _parseDate(data['startedAt']) : null,
       completedAt: data['completedAt'] != null ? _parseDate(data['completedAt']) : null,
@@ -91,6 +131,14 @@ class Ride {
     }
   }
 
+  static VehicleSegment _parseSegment(String? s) {
+    switch (s) {
+      case 'wide': return VehicleSegment.wide;
+      case 'luxury': return VehicleSegment.luxury;
+      default: return VehicleSegment.standard;
+    }
+  }
+
   String get statusText {
     switch (status) {
       case RideStatus.searching: return 'Sürücü Aranıyor';
@@ -101,6 +149,8 @@ class Ride {
       case RideStatus.cancelled: return 'İptal Edildi';
     }
   }
+
+  String get segmentLabel => SegmentConfig.get(segment).label;
 
   Map<String, dynamic> toMap() {
     return {
@@ -114,13 +164,33 @@ class Ride {
       'destLat': destLat,
       'destLng': destLng,
       'destAddress': destAddress,
-      'status': status.name == 'driverArriving' ? 'driver_arriving' : status.name == 'inProgress' ? 'in_progress' : status.name,
-      'fare': fare,
+      'status': _statusToString(status),
+      'segment': segment.name,
+      'personCount': personCount,
       'distanceKm': distanceKm,
-      'durationMin': durationMin,
+      'estimatedMinutes': estimatedMinutes,
+      'invoiceNo': invoiceNo,
+      'openingFee': openingFee,
+      'distanceFee': distanceFee,
+      'segmentSurcharge': segmentSurcharge,
+      'marketAdjustment': marketAdjustment,
+      'discount': discount,
+      'grossTotal': grossTotal,
+      'commission': commission,
+      'driverNet': driverNet,
+      'perPersonFee': perPersonFee,
+      'marketRate': marketRate,
       'createdAt': FieldValue.serverTimestamp(),
       'startedAt': startedAt?.toIso8601String(),
       'completedAt': completedAt?.toIso8601String(),
     };
+  }
+
+  static String _statusToString(RideStatus s) {
+    switch (s) {
+      case RideStatus.driverArriving: return 'driver_arriving';
+      case RideStatus.inProgress: return 'in_progress';
+      default: return s.name;
+    }
   }
 }

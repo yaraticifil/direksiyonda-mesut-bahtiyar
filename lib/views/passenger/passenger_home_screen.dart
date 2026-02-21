@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/passenger_controller.dart';
 import '../../models/ride_model.dart';
-import 'package:url_launcher/url_launcher.dart';
+import '../../services/ride_service.dart';
 
 class PassengerHomeScreen extends StatefulWidget {
   const PassengerHomeScreen({super.key});
@@ -16,31 +17,30 @@ class PassengerHomeScreen extends StatefulWidget {
 
 class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
   final AuthController authController = Get.find<AuthController>();
-  final PassengerController passengerController = Get.find<PassengerController>();
+  final PassengerController pc = Get.find<PassengerController>();
 
   GoogleMapController? _mapController;
-  final TextEditingController _destinationController = TextEditingController();
+  final TextEditingController _destController = TextEditingController();
 
   LatLng? _pickupLocation;
-  LatLng? _destinationLocation;
+  LatLng? _destLocation;
   String _pickupAddress = 'Konumunuz alınıyor...';
   String _destAddress = '';
   final Set<Marker> _markers = {};
   final Set<Polyline> _polylines = {};
-  bool _showRidePanel = false;
+  bool _showFarePanel = false;
 
   @override
   void initState() {
     super.initState();
     _initLocation();
-    // Aktif yolculuk var mı kontrol et
     if (authController.user != null) {
-      passengerController.checkActiveRide(authController.user!.uid);
+      pc.checkActiveRide(authController.user!.uid);
     }
   }
 
   Future<void> _initLocation() async {
-    final position = await passengerController.getCurrentLocation();
+    final position = await pc.getCurrentLocation();
     if (position != null) {
       setState(() {
         _pickupLocation = LatLng(position.latitude, position.longitude);
@@ -51,150 +51,143 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
           infoWindow: const InfoWindow(title: 'Bulunduğunuz Konum'),
         ));
       });
-      _mapController?.animateCamera(
-        CameraUpdate.newLatLngZoom(_pickupLocation!, 15),
-      );
-      // Adres çözümle
+      _mapController?.animateCamera(CameraUpdate.newLatLngZoom(_pickupLocation!, 15));
       try {
-        List<Placemark> placemarks = await placemarkFromCoordinates(
-          position.latitude, position.longitude,
-        );
-        if (placemarks.isNotEmpty) {
-          final p = placemarks.first;
-          setState(() {
-            _pickupAddress = '${p.street ?? ''}, ${p.subLocality ?? ''}, ${p.locality ?? ''}';
-          });
+        List<Placemark> pms = await placemarkFromCoordinates(position.latitude, position.longitude);
+        if (pms.isNotEmpty) {
+          final p = pms.first;
+          setState(() => _pickupAddress = '${p.street ?? ''}, ${p.subLocality ?? ''}, ${p.locality ?? ''}');
         }
       } catch (_) {}
     }
   }
 
-  Future<void> _searchDestination(String query) async {
+  Future<void> _searchDest(String query) async {
     if (query.length < 3) return;
     try {
-      List<Location> locations = await locationFromAddress(query);
-      if (locations.isNotEmpty) {
-        final loc = locations.first;
+      List<Location> locs = await locationFromAddress(query);
+      if (locs.isNotEmpty) {
+        final loc = locs.first;
         setState(() {
-          _destinationLocation = LatLng(loc.latitude, loc.longitude);
+          _destLocation = LatLng(loc.latitude, loc.longitude);
           _destAddress = query;
-
           _markers.removeWhere((m) => m.markerId.value == 'destination');
           _markers.add(Marker(
             markerId: const MarkerId('destination'),
-            position: _destinationLocation!,
+            position: _destLocation!,
             icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
             infoWindow: InfoWindow(title: _destAddress),
           ));
-
-          _showRidePanel = true;
+          _showFarePanel = true;
         });
 
-        // Haritayı her iki noktayı gösterecek şekilde ayarla
         if (_pickupLocation != null) {
-          _mapController?.animateCamera(
-            CameraUpdate.newLatLngBounds(
-              LatLngBounds(
-                southwest: LatLng(
-                  _pickupLocation!.latitude < _destinationLocation!.latitude
-                      ? _pickupLocation!.latitude
-                      : _destinationLocation!.latitude,
-                  _pickupLocation!.longitude < _destinationLocation!.longitude
-                      ? _pickupLocation!.longitude
-                      : _destinationLocation!.longitude,
-                ),
-                northeast: LatLng(
-                  _pickupLocation!.latitude > _destinationLocation!.latitude
-                      ? _pickupLocation!.latitude
-                      : _destinationLocation!.latitude,
-                  _pickupLocation!.longitude > _destinationLocation!.longitude
-                      ? _pickupLocation!.longitude
-                      : _destinationLocation!.longitude,
-                ),
+          _mapController?.animateCamera(CameraUpdate.newLatLngBounds(
+            LatLngBounds(
+              southwest: LatLng(
+                _pickupLocation!.latitude < _destLocation!.latitude ? _pickupLocation!.latitude : _destLocation!.latitude,
+                _pickupLocation!.longitude < _destLocation!.longitude ? _pickupLocation!.longitude : _destLocation!.longitude,
               ),
-              80,
+              northeast: LatLng(
+                _pickupLocation!.latitude > _destLocation!.latitude ? _pickupLocation!.latitude : _destLocation!.latitude,
+                _pickupLocation!.longitude > _destLocation!.longitude ? _pickupLocation!.longitude : _destLocation!.longitude,
+              ),
             ),
+            80,
+          ));
+
+          pc.calculateEstimate(
+            _pickupLocation!.latitude, _pickupLocation!.longitude,
+            _destLocation!.latitude, _destLocation!.longitude,
           );
 
-          // Tahmini ücret hesapla
-          passengerController.calculateEstimate(
-            _pickupLocation!.latitude,
-            _pickupLocation!.longitude,
-            _destinationLocation!.latitude,
-            _destinationLocation!.longitude,
-          );
-
-          // Basit çizgi çiz
           _polylines.clear();
           _polylines.add(Polyline(
             polylineId: const PolylineId('route'),
-            points: [_pickupLocation!, _destinationLocation!],
+            points: [_pickupLocation!, _destLocation!],
             color: const Color(0xFFFFD700),
             width: 4,
           ));
         }
       }
     } catch (e) {
-      Get.snackbar("Hata", "Adres bulunamadı. Lütfen daha detaylı yazın.");
+      Get.snackbar("Hata", "Adres bulunamadı.");
     }
   }
 
-  void _requestRide() {
-    if (_pickupLocation == null || _destinationLocation == null) return;
+  void _showRentalAgreement() {
+    if (_pickupLocation == null || _destLocation == null || pc.fareBreakdown.value == null) return;
+    final fb = pc.fareBreakdown.value!;
 
-    // Kısa süreli kiralama sözleşmesi onayı
     Get.dialog(
       AlertDialog(
         backgroundColor: const Color(0xFF2C2C2C),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Row(
           children: [
-            Icon(Icons.description, color: Color(0xFFFFD700)),
+            Icon(Icons.description, color: Color(0xFFFFD700), size: 22),
             SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                'Kısa Süreli Araç Kiralama',
-                style: TextStyle(color: Color(0xFFFFD700), fontSize: 16),
-              ),
-            ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Bu hizmeti kullanarak, Ortak Yol platformu üzerinden kısa süreli araç kiralama sözleşmesi akdetmiş olursunuz.',
-              style: TextStyle(color: Colors.grey[300], fontSize: 13, height: 1.5),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              '• Araç sigortalıdır\n• Sürücü lisanslıdır\n• 6098 sayılı TBK kapsamındadır',
-              style: TextStyle(color: Colors.grey[400], fontSize: 12, height: 1.6),
-            ),
-            const SizedBox(height: 15),
-            Obx(() => Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1C1C1C),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Tahmini Ücret:', style: TextStyle(color: Colors.white)),
-                  Text(
-                    '₺${passengerController.estimatedFare.value.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      color: Color(0xFFFFD700),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                ],
-              ),
+            Expanded(child: Text(
+              'Tahmini Tutar ve Yolculuk Özeti',
+              style: TextStyle(color: Color(0xFFFFD700), fontSize: 15, fontWeight: FontWeight.bold),
             )),
           ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _summaryRow('Rota', '$_pickupAddress → $_destAddress', isRoute: true),
+              _summaryRow('Tahmini Mesafe', '${fb.distanceKm.toStringAsFixed(1)} km'),
+              _summaryRow('Araç Segmenti', SegmentConfig.get(fb.segment).label),
+              _summaryRow('Paylaşım', '${fb.personCount} kişi'),
+              const Divider(color: Color(0xFF444444), height: 20),
+              _labelText('ÜCRET KIRILIMI', isHeader: true),
+              const SizedBox(height: 8),
+              _fareRow('Açılış Bedeli', fb.openingFee),
+              _fareRow('Mesafe Bedeli', fb.distanceFee),
+              if (fb.segmentSurcharge > 0) _fareRow('Segment Farkı', fb.segmentSurcharge),
+              if (fb.marketAdjustment > 0) _fareRow('Piyasa Ayarı', fb.marketAdjustment),
+              if (fb.discount > 0) _fareRow('İndirim/Kampanya', -fb.discount, isDiscount: true),
+              const Divider(color: Color(0xFF444444), height: 16),
+              _fareRow('Toplam Araç Bedeli', fb.grossTotal, isBold: true),
+              if (fb.personCount > 1) _fareRow('Kişi Başı Bedel', fb.perPersonFee, isBold: true, isGold: true),
+              const SizedBox(height: 12),
+              // Güven metni
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1C1C1C),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFFFD700).withValues(alpha: 0.2)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(Icons.verified_user, color: Color(0xFFFFD700), size: 14),
+                        SizedBox(width: 6),
+                        Text('Bahtiyar Standardı', style: TextStyle(color: Color(0xFFFFD700), fontSize: 11, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Tahmini bedel gösterilir. Nihai ücret, rota ve işlem kayıtlarına göre kesinleştirilir. Komisyon, vergi ve sürücü netleşmesi şeffaf gösterilir.',
+                      style: TextStyle(color: Colors.grey[500], fontSize: 10, height: 1.4),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                '🛡️ Kısa süreli şoförlü araç kiralama sözleşmesi\nTBK md. 305 vd. kapsamında',
+                style: TextStyle(color: Colors.grey[600], fontSize: 10, fontStyle: FontStyle.italic),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -202,15 +195,13 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
             child: Text('İptal', style: TextStyle(color: Colors.grey[500])),
           ),
           ElevatedButton(
-            onPressed: () {
-              Get.back();
-              _confirmRide();
-            },
+            onPressed: () { Get.back(); _confirmRide(); },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFFFD700),
               foregroundColor: Colors.black,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
-            child: const Text('KABUL ET VE ÇAĞIR', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: const Text('ONAYLA VE KİRALA', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
           ),
         ],
       ),
@@ -218,13 +209,13 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
   }
 
   void _confirmRide() {
-    passengerController.requestRide(
+    pc.requestRide(
       passengerId: authController.user!.uid,
       pickupLat: _pickupLocation!.latitude,
       pickupLng: _pickupLocation!.longitude,
       pickupAddress: _pickupAddress,
-      destLat: _destinationLocation!.latitude,
-      destLng: _destinationLocation!.longitude,
+      destLat: _destLocation!.latitude,
+      destLng: _destLocation!.longitude,
       destAddress: _destAddress,
     );
   }
@@ -234,13 +225,13 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Google Haritalar
+          // Google Maps
           GoogleMap(
             initialCameraPosition: CameraPosition(
-              target: _pickupLocation ?? const LatLng(41.0082, 28.9784), // İstanbul
+              target: _pickupLocation ?? const LatLng(41.0082, 28.9784),
               zoom: 14,
             ),
-            onMapCreated: (controller) => _mapController = controller,
+            onMapCreated: (c) => _mapController = c,
             markers: _markers,
             polylines: _polylines,
             myLocationEnabled: true,
@@ -256,143 +247,30 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  // Logo ve menü
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1C1C1C),
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.3),
-                              blurRadius: 10,
-                            ),
-                          ],
-                        ),
-                        child: const Row(
-                          children: [
-                            Icon(Icons.handshake, color: Color(0xFFFFD700), size: 20),
-                            SizedBox(width: 8),
-                            Text(
-                              'ORTAK YOL',
-                              style: TextStyle(
-                                color: Color(0xFFFFD700),
-                                fontWeight: FontWeight.w900,
-                                fontSize: 14,
-                                letterSpacing: 2,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          _topBarButton(Icons.history, () {
-                            Get.toNamed('/ride-history');
-                          }),
-                          const SizedBox(width: 8),
-                          _topBarButton(Icons.logout, () {
-                            authController.logout();
-                          }),
-                        ],
-                      ),
-                    ],
-                  ),
+                  _buildTopBar(),
                   const SizedBox(height: 12),
-
-                  // Hedef arama çubuğu
-                  Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2C2C2C),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: const Color(0xFFFFD700).withValues(alpha: 0.3),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.3),
-                          blurRadius: 15,
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        // Nereden
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.my_location, color: Colors.green, size: 18),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  _pickupAddress,
-                                  style: TextStyle(color: Colors.grey[400], fontSize: 13),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Divider(color: Colors.grey[700], height: 1),
-                        // Nereye
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.location_on, color: Color(0xFFFFD700), size: 18),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: TextField(
-                                  controller: _destinationController,
-                                  style: const TextStyle(color: Colors.white, fontSize: 14),
-                                  decoration: InputDecoration(
-                                    hintText: 'Nereye gitmek istiyorsun?',
-                                    hintStyle: TextStyle(color: Colors.grey[600]),
-                                    border: InputBorder.none,
-                                  ),
-                                  onSubmitted: _searchDestination,
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.search, color: Color(0xFFFFD700)),
-                                onPressed: () => _searchDestination(_destinationController.text),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  _buildSearchBar(),
                 ],
               ),
             ),
           ),
 
-          // Aktif yolculuk takibi
+          // Aktif yolculuk overlay
           Obx(() {
-            final ride = passengerController.currentRide.value;
+            final ride = pc.currentRide.value;
             if (ride != null && ride.status != RideStatus.completed && ride.status != RideStatus.cancelled) {
               return _buildActiveRidePanel(ride);
             }
             return const SizedBox.shrink();
           }),
 
-          // Alt panel — araç çağır
-          if (_showRidePanel)
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: _buildRideRequestPanel(),
-            ),
+          // Alt panel — fare + segment + KİRALA
+          if (_showFarePanel)
+            Positioned(bottom: 0, left: 0, right: 0, child: _buildFarePanel()),
 
           // Konum butonu
           Positioned(
-            bottom: _showRidePanel ? 210 : 30,
+            bottom: _showFarePanel ? 300 : 30,
             right: 16,
             child: FloatingActionButton(
               mini: true,
@@ -406,7 +284,39 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
     );
   }
 
-  Widget _topBarButton(IconData icon, VoidCallback onTap) {
+  Widget _buildTopBar() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1C1C1C),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 10)],
+          ),
+          child: const Row(
+            children: [
+              Icon(Icons.handshake, color: Color(0xFFFFD700), size: 20),
+              SizedBox(width: 8),
+              Text('ORTAK YOL', style: TextStyle(color: Color(0xFFFFD700), fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: 2)),
+            ],
+          ),
+        ),
+        Row(
+          children: [
+            _topBtn(Icons.history, () => Get.toNamed('/ride-history')),
+            const SizedBox(width: 8),
+            _topBtn(Icons.sos, () => authController.launchEmergencySupport()),
+            const SizedBox(width: 8),
+            _topBtn(Icons.logout, () => authController.logout()),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _topBtn(IconData icon, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -414,105 +324,197 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
         decoration: BoxDecoration(
           color: const Color(0xFF1C1C1C),
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 10),
-          ],
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 10)],
         ),
         child: Icon(icon, color: Colors.grey[400], size: 20),
       ),
     );
   }
 
-  Widget _buildRideRequestPanel() {
+  Widget _buildSearchBar() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2C2C2C),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFFFD700).withValues(alpha: 0.3)),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 15)],
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            child: Row(
+              children: [
+                const Icon(Icons.my_location, color: Colors.green, size: 18),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(_pickupAddress, style: TextStyle(color: Colors.grey[400], fontSize: 13), overflow: TextOverflow.ellipsis),
+                ),
+              ],
+            ),
+          ),
+          Divider(color: Colors.grey[700], height: 1),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            child: Row(
+              children: [
+                const Icon(Icons.location_on, color: Color(0xFFFFD700), size: 18),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: _destController,
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
+                    decoration: InputDecoration(hintText: 'Nereye gitmek istiyorsun?', hintStyle: TextStyle(color: Colors.grey[600]), border: InputBorder.none),
+                    onSubmitted: _searchDest,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.search, color: Color(0xFFFFD700)),
+                  onPressed: () => _searchDest(_destController.text),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFarePanel() {
+    return Container(
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: const Color(0xFF1C1C1C),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        border: Border(
-          top: BorderSide(color: const Color(0xFFFFD700).withValues(alpha: 0.3)),
-        ),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 20, offset: const Offset(0, -5)),
-        ],
+        border: Border(top: BorderSide(color: const Color(0xFFFFD700).withValues(alpha: 0.3))),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 20, offset: const Offset(0, -5))],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.grey[700],
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[700], borderRadius: BorderRadius.circular(2))),
+          const SizedBox(height: 12),
+
+          // Segment seçici
+          Obx(() => Row(
+            children: VehicleSegment.values.map((seg) {
+              final config = SegmentConfig.get(seg);
+              final isSelected = pc.selectedSegment.value == seg;
+              return Expanded(
+                child: GestureDetector(
+                  onTap: () => pc.setSegment(seg),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      color: isSelected ? const Color(0xFFFFD700) : const Color(0xFF2C2C2C),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: isSelected ? const Color(0xFFFFD700) : Colors.grey[700]!),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(config.icon, style: const TextStyle(fontSize: 18)),
+                        const SizedBox(height: 2),
+                        Text(config.label, style: TextStyle(
+                          fontSize: 11, fontWeight: FontWeight.bold,
+                          color: isSelected ? Colors.black : Colors.grey[500],
+                        )),
+                        Text('×${config.multiplier}', style: TextStyle(
+                          fontSize: 9, color: isSelected ? Colors.black54 : Colors.grey[600],
+                        )),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          )),
+          const SizedBox(height: 10),
+
+          // Kişi sayısı seçici
+          Obx(() => Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Hedef', style: TextStyle(color: Colors.grey[500], fontSize: 11)),
-                  const SizedBox(height: 2),
-                  SizedBox(
-                    width: 180,
-                    child: Text(
-                      _destAddress,
-                      style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
-                      overflow: TextOverflow.ellipsis,
+              Text('Kişi Sayısı:', style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+              const SizedBox(width: 10),
+              ...List.generate(4, (i) {
+                final count = i + 1;
+                final isSelected = pc.selectedPersonCount.value == count;
+                return GestureDetector(
+                  onTap: () => pc.setPersonCount(count),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    width: 36, height: 36,
+                    decoration: BoxDecoration(
+                      color: isSelected ? const Color(0xFFFFD700) : const Color(0xFF2C2C2C),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: isSelected ? const Color(0xFFFFD700) : Colors.grey[700]!),
                     ),
+                    child: Center(child: Text(
+                      '$count',
+                      style: TextStyle(
+                        color: isSelected ? Colors.black : Colors.grey[500],
+                        fontWeight: FontWeight.bold, fontSize: 14,
+                      ),
+                    )),
                   ),
-                ],
-              ),
-              Obx(() => Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    '₺${passengerController.estimatedFare.value.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      color: Color(0xFFFFD700),
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    '~${passengerController.estimatedDistance.value.toStringAsFixed(1)} km • ${passengerController.estimatedDuration.value} dk',
-                    style: TextStyle(color: Colors.grey[500], fontSize: 11),
-                  ),
-                ],
-              )),
+                );
+              }),
             ],
-          ),
-          const SizedBox(height: 16),
+          )),
+          const SizedBox(height: 12),
+
+          // Fiyat özeti
+          Obx(() {
+            final fb = pc.fareBreakdown.value;
+            if (fb == null) return const SizedBox.shrink();
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(_destAddress, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 2),
+                    Text('~${fb.distanceKm.toStringAsFixed(1)} km • ${fb.estimatedMinutes} dk', style: TextStyle(color: Colors.grey[500], fontSize: 11)),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    if (fb.personCount > 1) Text('Toplam: ₺${fb.grossTotal.toStringAsFixed(0)}', style: TextStyle(color: Colors.grey[500], fontSize: 10)),
+                    Text(
+                      fb.personCount > 1 ? '₺${fb.perPersonFee.toStringAsFixed(0)} / kişi' : '₺${fb.grossTotal.toStringAsFixed(0)}',
+                      style: const TextStyle(color: Color(0xFFFFD700), fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ],
+            );
+          }),
+          const SizedBox(height: 12),
+
+          // KİRALA butonu
           SizedBox(
-            width: double.infinity,
-            height: 52,
+            width: double.infinity, height: 50,
             child: Obx(() => ElevatedButton(
-              onPressed: passengerController.isLoading.value ? null : _requestRide,
+              onPressed: pc.isLoading.value ? null : _showRentalAgreement,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFFFD700),
                 foregroundColor: Colors.black,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 elevation: 0,
               ),
-              child: passengerController.isLoading.value
-                  ? const SizedBox(
-                      width: 24, height: 24,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
-                    )
-                  : const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.local_taxi, size: 22),
-                        SizedBox(width: 10),
-                        Text(
-                          'ARAÇ ÇAĞIR',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1),
-                        ),
-                      ],
-                    ),
+              child: pc.isLoading.value
+                ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
+                : const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.local_taxi, size: 22),
+                      SizedBox(width: 10),
+                      Text('KİRALA', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                    ],
+                  ),
             )),
           ),
         ],
@@ -522,94 +524,58 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
 
   Widget _buildActiveRidePanel(Ride ride) {
     return Positioned(
-      bottom: 0,
-      left: 0,
-      right: 0,
+      bottom: 0, left: 0, right: 0,
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: const Color(0xFF1C1C1C),
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          border: Border(
-            top: BorderSide(color: const Color(0xFFFFD700).withValues(alpha: 0.5)),
-          ),
+          border: Border(top: BorderSide(color: const Color(0xFFFFD700).withValues(alpha: 0.5))),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 40, height: 4,
-              decoration: BoxDecoration(color: Colors.grey[700], borderRadius: BorderRadius.circular(2)),
-            ),
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[700], borderRadius: BorderRadius.circular(2))),
             const SizedBox(height: 16),
-
-            // Durum göstergesi
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
-                color: _getStatusColor(ride.status).withValues(alpha: 0.15),
+                color: _statusColor(ride.status).withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: _getStatusColor(ride.status).withValues(alpha: 0.4)),
+                border: Border.all(color: _statusColor(ride.status).withValues(alpha: 0.4)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(_getStatusIcon(ride.status), color: _getStatusColor(ride.status), size: 20),
+                  Icon(_statusIcon(ride.status), color: _statusColor(ride.status), size: 20),
                   const SizedBox(width: 10),
-                  Text(
-                    ride.statusText,
-                    style: TextStyle(
-                      color: _getStatusColor(ride.status),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                  ),
+                  Text(ride.statusText, style: TextStyle(color: _statusColor(ride.status), fontWeight: FontWeight.bold, fontSize: 15)),
                 ],
               ),
             ),
             const SizedBox(height: 16),
-
-            // Sürücü bilgisi (eşleşme olduysa)
             if (ride.driverName != null) ...[
               Row(
                 children: [
                   Container(
                     width: 45, height: 45,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFD700).withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(23),
-                    ),
+                    decoration: BoxDecoration(color: const Color(0xFFFFD700).withValues(alpha: 0.15), borderRadius: BorderRadius.circular(23)),
                     child: const Icon(Icons.person, color: Color(0xFFFFD700), size: 24),
                   ),
                   const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          ride.driverName!,
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
-                        ),
-                        Text(
-                          ride.driverPhone ?? '',
-                          style: TextStyle(color: Colors.grey[500], fontSize: 12),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Sürücüyü ara butonu
+                  Expanded(child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(ride.driverName!, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                      Text(ride.driverPhone ?? '', style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+                    ],
+                  )),
                   if (ride.driverPhone != null)
                     IconButton(
-                      onPressed: () async {
-                        final uri = Uri.parse('tel:${ride.driverPhone}');
-                        await launchUrl(uri);
-                      },
+                      onPressed: () async => await launchUrl(Uri.parse('tel:${ride.driverPhone}')),
                       icon: Container(
                         padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                        decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
                         child: const Icon(Icons.phone, color: Colors.green, size: 20),
                       ),
                     ),
@@ -617,26 +583,19 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
               ),
               const SizedBox(height: 12),
             ],
-
-            // Ücret
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Tahmini Ücret', style: TextStyle(color: Colors.grey[500], fontSize: 13)),
-                Text(
-                  '₺${ride.fare?.toStringAsFixed(2) ?? '—'}',
-                  style: const TextStyle(color: Color(0xFFFFD700), fontWeight: FontWeight.bold, fontSize: 18),
-                ),
+                Text(ride.personCount > 1 ? 'Kişi Başı Kiralama' : 'Kiralama Bedeli', style: TextStyle(color: Colors.grey[500], fontSize: 13)),
+                Text('₺${ride.personCount > 1 ? ride.perPersonFee.toStringAsFixed(0) : ride.grossTotal.toStringAsFixed(0)}', style: const TextStyle(color: Color(0xFFFFD700), fontWeight: FontWeight.bold, fontSize: 18)),
               ],
             ),
             const SizedBox(height: 12),
-
-            // İptal butonu (sürücü gelmeden önce)
             if (ride.status == RideStatus.searching || ride.status == RideStatus.matched)
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
-                  onPressed: () => passengerController.cancelRide(),
+                  onPressed: () => pc.cancelRide(),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.red,
                     side: const BorderSide(color: Colors.red),
@@ -652,19 +611,55 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
     );
   }
 
-  Color _getStatusColor(RideStatus status) {
-    switch (status) {
+  // ── Yardımcı widgetlar ──
+  Widget _summaryRow(String label, String value, {bool isRoute = false}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(width: 100, child: Text(label, style: TextStyle(color: Colors.grey[500], fontSize: 11))),
+          Expanded(child: Text(value, style: TextStyle(color: Colors.white, fontSize: isRoute ? 11 : 12))),
+        ],
+      ),
+    );
+  }
+
+  Widget _fareRow(String label, double amount, {bool isBold = false, bool isGold = false, bool isDiscount = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: TextStyle(color: isBold ? Colors.white : Colors.grey[400], fontSize: 12, fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
+          Text(
+            '${isDiscount ? "-" : ""}₺${amount.abs().toStringAsFixed(2)}',
+            style: TextStyle(
+              color: isGold ? const Color(0xFFFFD700) : (isDiscount ? Colors.green : Colors.white),
+              fontSize: isBold ? 14 : 12,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _labelText(String text, {bool isHeader = false}) {
+    return Text(text, style: TextStyle(color: const Color(0xFFFFD700), fontSize: isHeader ? 11 : 10, fontWeight: FontWeight.bold, letterSpacing: 1));
+  }
+
+  Color _statusColor(RideStatus s) {
+    switch (s) {
       case RideStatus.searching: return Colors.orange;
-      case RideStatus.matched: return Colors.blue;
-      case RideStatus.driverArriving: return Colors.blue;
-      case RideStatus.inProgress: return Colors.green;
-      case RideStatus.completed: return Colors.green;
+      case RideStatus.matched: case RideStatus.driverArriving: return Colors.blue;
+      case RideStatus.inProgress: case RideStatus.completed: return Colors.green;
       case RideStatus.cancelled: return Colors.red;
     }
   }
 
-  IconData _getStatusIcon(RideStatus status) {
-    switch (status) {
+  IconData _statusIcon(RideStatus s) {
+    switch (s) {
       case RideStatus.searching: return Icons.search;
       case RideStatus.matched: return Icons.check_circle;
       case RideStatus.driverArriving: return Icons.directions_car;
@@ -674,20 +669,15 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
     }
   }
 
-  // Koyu harita stili
   static const String _darkMapStyle = '''
 [
   {"elementType": "geometry", "stylers": [{"color": "#212121"}]},
   {"elementType": "labels.icon", "stylers": [{"visibility": "off"}]},
   {"elementType": "labels.text.fill", "stylers": [{"color": "#757575"}]},
   {"elementType": "labels.text.stroke", "stylers": [{"color": "#212121"}]},
-  {"featureType": "administrative", "elementType": "geometry", "stylers": [{"color": "#757575"}]},
-  {"featureType": "poi", "elementType": "geometry", "stylers": [{"color": "#181818"}]},
   {"featureType": "road", "elementType": "geometry.fill", "stylers": [{"color": "#2c2c2c"}]},
-  {"featureType": "road", "elementType": "labels.text.fill", "stylers": [{"color": "#8a8a8a"}]},
   {"featureType": "road.highway", "elementType": "geometry", "stylers": [{"color": "#3c3c3c"}]},
-  {"featureType": "water", "elementType": "geometry", "stylers": [{"color": "#000000"}]},
-  {"featureType": "water", "elementType": "labels.text.fill", "stylers": [{"color": "#3d3d3d"}]}
+  {"featureType": "water", "elementType": "geometry", "stylers": [{"color": "#000000"}]}
 ]
 ''';
 }

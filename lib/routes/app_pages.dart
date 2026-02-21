@@ -15,6 +15,8 @@ import '../views/driver/legal_contract_screen.dart';
 import '../views/driver/penalty_report_screen.dart';
 import '../views/passenger/passenger_home_screen.dart';
 import '../views/passenger/ride_history_screen.dart';
+import '../views/driver/fair_earnings_screen.dart';
+import '../views/driver/ride_detail_screen.dart';
 
 class AppPages {
   static const initial = '/';
@@ -80,6 +82,17 @@ class AppPages {
       name: '/ride-history',
       page: () => const RideHistoryScreen(),
       binding: PassengerBinding(),
+    ),
+    // ─── SÜRÜCÜ ADİL KAZANÇ ───
+    GetPage(
+      name: '/fair-earnings',
+      page: () => const FairEarningsScreen(),
+      binding: DriverBinding(),
+    ),
+    GetPage(
+      name: '/ride-detail',
+      page: () => const RideDetailScreen(),
+      binding: DriverBinding(),
     ),
   ];
 }
