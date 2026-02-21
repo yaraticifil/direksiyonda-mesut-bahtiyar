@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/driver_controller.dart';
-import '../../models/driver_model.dart';
 import '../../models/payout_model.dart';
 import '../payout/payout_request_screen.dart';
 import '../payout/payout_history_screen.dart';
@@ -19,15 +18,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final AuthController authController = Get.find<AuthController>();
   final DriverController driverController = Get.find<DriverController>();
 
+  // Motivasyon sözleri
+  final List<String> _slogans = [
+    '"Korsan taksi değil, emek taksi!"',
+    '"Plakam yok belki ama yolum belli."',
+    '"Direksiyon başında, hukuk zemininde."',
+    '"Alın terimize sahip çıkıyoruz."',
+    '"Biz yedi uyuyanlarız, artık uyandık."',
+  ];
+
+  late String _currentSlogan;
+
   @override
   void initState() {
     super.initState();
-    // AuthController'da driver verisi henüz yüklenmemiş olabilir, garanti olsun diye user.uid üzerinden çekiyoruz
+    _currentSlogan = (_slogans..shuffle()).first;
+    
     if (authController.user != null) {
-      // DriverController'ın kendi state'ini güncellemesi için
       driverController.fetchDriverData(authController.user!.uid);
-      
-      // Eğer AuthController'da driver null ise (kötü ağ bağlantısı vb.), onu da tetikleyebiliriz
       if (authController.driver == null) {
         authController.fetchDriverData(authController.user!.uid);
       }
@@ -37,59 +45,89 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: const Text('Driver Dashboard'),
-        backgroundColor: Colors.green,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => authController.logout(),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF1C1C1C), Color(0xFF2C2C2C)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          if (authController.driver != null) {
-            await driverController.fetchDriverData(authController.driver!.id);
-          }
-        },
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildWelcomeCard(),
-              const SizedBox(height: 20),
-              _buildStatsCards(),
-              const SizedBox(height: 20),
-              _buildQuickActions(),
-              const SizedBox(height: 20),
-              _buildRecentPayouts(),
-            ],
+        ),
+        child: SafeArea(
+          child: RefreshIndicator(
+            color: const Color(0xFFFFD700),
+            backgroundColor: const Color(0xFF2C2C2C),
+            onRefresh: () async {
+              if (authController.driver != null) {
+                await driverController.fetchDriverData(authController.driver!.id);
+              }
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTopBar(),
+                  const SizedBox(height: 20),
+                  _buildWelcomeCard(),
+                  const SizedBox(height: 20),
+                  _buildStatsCards(),
+                  const SizedBox(height: 25),
+                  _buildQuickActions(),
+                  const SizedBox(height: 25),
+                  _buildRecentPayouts(),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
           ),
         ),
       ),
     );
   }
 
+  Widget _buildTopBar() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Text(
+          'ORTAK YOL',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w900,
+            color: Color(0xFFFFD700),
+            letterSpacing: 3,
+          ),
+        ),
+        IconButton(
+          icon: const Icon(Icons.logout, color: Colors.grey),
+          onPressed: () => authController.logout(),
+          tooltip: 'Çıkış Yap',
+        ),
+      ],
+    );
+  }
+
   Widget _buildWelcomeCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.green[400]!, Colors.green[600]!],
+        gradient: const LinearGradient(
+          colors: [Color(0xFF2C2C2C), Color(0xFF3C3C3C)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: const Color(0xFFFFD700).withOpacity(0.3),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.green.withOpacity(0.3),
-            blurRadius: 10,
+            color: const Color(0xFFFFD700).withOpacity(0.08),
+            blurRadius: 20,
             spreadRadius: 2,
           ),
         ],
@@ -100,15 +138,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Row(
             children: [
               Container(
-                width: 50,
-                height: 50,
+                width: 55,
+                height: 55,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(25),
+                  color: const Color(0xFFFFD700).withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(28),
+                  border: Border.all(
+                    color: const Color(0xFFFFD700).withOpacity(0.5),
+                    width: 1.5,
+                  ),
                 ),
                 child: const Icon(
                   Icons.person,
-                  color: Colors.white,
+                  color: Color(0xFFFFD700),
                   size: 30,
                 ),
               ),
@@ -118,7 +160,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Obx(() => Text(
-                      'Welcome, ${authController.driver?.name ?? 'Driver'}!',
+                      'Merhaba, ${authController.driver?.name ?? 'Yoldaş'}!',
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -127,9 +169,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     )),
                     Obx(() => Text(
                       authController.driver?.phone ?? '',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.white70,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey[500],
                       ),
                     )),
                   ],
@@ -138,30 +180,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ],
           ),
           const SizedBox(height: 15),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(
-                  Icons.check_circle,
-                  color: Colors.white,
-                  size: 16,
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                decoration: BoxDecoration(
+                  color: Colors.green.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.green.withOpacity(0.4)),
                 ),
-                const SizedBox(width: 5),
-                const Text(
-                  'Approved Driver',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.verified, color: Colors.green, size: 14),
+                    SizedBox(width: 5),
+                    Text(
+                      'Onaylı Sürücü',
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Text(
+            _currentSlogan,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey[500],
+              fontStyle: FontStyle.italic,
             ),
           ),
         ],
@@ -174,17 +226,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
       children: [
         Expanded(
           child: Obx(() => _buildStatCard(
-            'Total Earnings',
-            '\$${driverController.getTotalEarnings().toStringAsFixed(2)}',
+            'Toplam Kazanç',
+            '₺${driverController.getTotalEarnings().toStringAsFixed(2)}',
             Icons.trending_up,
-            Colors.blue,
+            Colors.green,
           )),
         ),
-        const SizedBox(width: 15),
+        const SizedBox(width: 12),
         Expanded(
           child: Obx(() => _buildStatCard(
-            'Pending Payouts',
-            '\$${driverController.getPendingPayouts().toStringAsFixed(2)}',
+            'Bekleyen Ödeme',
+            '₺${driverController.getPendingPayouts().toStringAsFixed(2)}',
             Icons.hourglass_empty,
             Colors.orange,
           )),
@@ -195,49 +247,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildStatCard(String title, String value, IconData icon, Color color) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFF2C2C2C),
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
-        ],
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withOpacity(0.15),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(
-              icon,
-              color: color,
-              size: 24,
-            ),
+            child: Icon(icon, color: color, size: 20),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           Text(
             title,
             style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
+              fontSize: 12,
+              color: Colors.grey[500],
             ),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 4),
           Text(
             value,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.grey[800],
+              color: Colors.white,
             ),
           ),
         ],
@@ -249,75 +294,75 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Quick Actions',
+        const Text(
+          'HIZLI İŞLEMLER',
           style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey[800],
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+            color: Color(0xFFFFD700),
+            letterSpacing: 2,
           ),
         ),
         const SizedBox(height: 15),
+        // Hukuki Kalkan Satırı
         Row(
           children: [
             Expanded(
               child: _buildActionButton(
-                'ACİL AVUKAT',
+                'ACİL\nAVUKAT',
                 Icons.gavel,
                 Colors.red,
                 () => authController.launchEmergencySupport(),
               ),
             ),
-            const SizedBox(width: 15),
+            const SizedBox(width: 10),
             Expanded(
               child: _buildActionButton(
-                'CEZA BİLDİR',
+                'CEZA\nBİLDİR',
                 Icons.report_problem,
-                Colors.orange[900]!,
+                Colors.orange[800]!,
                 () => Get.toNamed('/report-penalty'),
               ),
             ),
-          ],
-        ),
-        const SizedBox(height: 15),
-        Row(
-          children: [
+            const SizedBox(width: 10),
             Expanded(
               child: _buildActionButton(
-                'PARA ÇEK',
-                Icons.request_quote,
-                Colors.green,
-                () => Get.to(() => const PayoutRequestScreen()),
-              ),
-            ),
-            const SizedBox(width: 15),
-            Expanded(
-              child: _buildActionButton(
-                'GEÇMİŞ',
-                Icons.history,
-                Colors.purple,
-                () => Get.to(() => const PayoutHistoryScreen()),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 15),
-        Row(
-          children: [
-            Expanded(
-              child: _buildActionButton(
-                'DİJİTAL KİMLİK',
+                'DİJİTAL\nKİMLİK',
                 Icons.qr_code,
                 Colors.blue,
                 () => Get.toNamed('/digital-id'),
               ),
             ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        // İkinci Satır
+        Row(
+          children: [
             Expanded(
               child: _buildActionButton(
-                'SÖZLEŞME İBRAZ',
+                'SÖZLEŞME\nİBRAZ',
                 Icons.description,
                 Colors.blueGrey,
                 () => Get.toNamed('/legal-contract'),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _buildActionButton(
+                'PARA\nÇEK',
+                Icons.account_balance_wallet,
+                Colors.green,
+                () => Get.to(() => const PayoutRequestScreen()),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _buildActionButton(
+                'ÖDEME\nGEÇMİŞİ',
+                Icons.history,
+                Colors.purple,
+                () => Get.to(() => const PayoutHistoryScreen()),
               ),
             ),
           ],
@@ -330,40 +375,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              blurRadius: 10,
-              spreadRadius: 2,
-            ),
-          ],
+          color: const Color(0xFF2C2C2C),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: color.withOpacity(0.3),
+            width: 1,
+          ),
         ),
         child: Column(
           children: [
             Container(
-              width: 50,
-              height: 50,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(25),
+                color: color.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(22),
               ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 28,
-              ),
+              child: Icon(icon, color: color, size: 22),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             Text(
               title,
               style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[800],
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: Colors.grey[300],
+                height: 1.3,
               ),
               textAlign: TextAlign.center,
             ),
@@ -380,57 +419,45 @@ class _DashboardScreenState extends State<DashboardScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Recent Payouts',
+            const Text(
+              'SON ÖDEMELER',
               style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[800],
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFFFFD700),
+                letterSpacing: 2,
               ),
             ),
             TextButton(
               onPressed: () => Get.to(() => const PayoutHistoryScreen()),
-              child: Text(
-                'View All',
+              child: const Text(
+                'Tümünü Gör',
                 style: TextStyle(
-                  color: Colors.green[700],
-                  fontSize: 14,
+                  color: Color(0xFFFFD700),
+                  fontSize: 13,
                 ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 15),
+        const SizedBox(height: 10),
         Obx(() {
           if (driverController.payouts.isEmpty) {
             return Container(
               width: double.infinity,
               padding: const EdgeInsets.all(30),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    blurRadius: 10,
-                    spreadRadius: 2,
-                  ),
-                ],
+                color: const Color(0xFF2C2C2C),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Colors.grey.withOpacity(0.2)),
               ),
               child: Column(
                 children: [
-                  Icon(
-                    Icons.receipt_long,
-                    size: 50,
-                    color: Colors.grey[400],
-                  ),
+                  Icon(Icons.receipt_long, size: 40, color: Colors.grey[600]),
                   const SizedBox(height: 10),
                   Text(
-                    'No payouts yet',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[600],
-                    ),
+                    'Henüz ödeme kaydı yok',
+                    style: TextStyle(fontSize: 14, color: Colors.grey[500]),
                   ),
                 ],
               ),
@@ -440,35 +467,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
           return Column(
             children: driverController.payouts.take(3).map((payout) {
               return Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.all(15),
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
-                      blurRadius: 5,
-                      spreadRadius: 1,
-                    ),
-                  ],
+                  color: const Color(0xFF2C2C2C),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.withOpacity(0.15)),
                 ),
                 child: Row(
                   children: [
                     Container(
-                      width: 40,
-                      height: 40,
+                      width: 38,
+                      height: 38,
                       decoration: BoxDecoration(
-                        color: _getStatusColor(payout.status).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
+                        color: _getStatusColor(payout.status).withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(19),
                       ),
                       child: Icon(
                         _getStatusIcon(payout.status),
                         color: _getStatusColor(payout.status),
-                        size: 20,
+                        size: 18,
                       ),
                     ),
-                    const SizedBox(width: 15),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -476,14 +497,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Text(
                             payout.description,
                             style: const TextStyle(
-                              fontSize: 14,
+                              fontSize: 13,
                               fontWeight: FontWeight.w600,
+                              color: Colors.white,
                             ),
                           ),
                           Text(
-                            DateFormat('MMM dd, yyyy').format(payout.createdAt),
+                            DateFormat('dd.MM.yyyy').format(payout.createdAt),
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 11,
                               color: Colors.grey[600],
                             ),
                           ),
@@ -494,22 +516,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          '\$${payout.amount.toStringAsFixed(2)}',
+                          '₺${payout.amount.toStringAsFixed(2)}',
                           style: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 15,
                             fontWeight: FontWeight.bold,
+                            color: Color(0xFFFFD700),
                           ),
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: _getStatusColor(payout.status),
+                            color: _getStatusColor(payout.status).withOpacity(0.15),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
                             payout.statusText,
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: _getStatusColor(payout.status),
                               fontSize: 10,
                               fontWeight: FontWeight.w600,
                             ),

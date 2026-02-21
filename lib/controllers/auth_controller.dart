@@ -91,6 +91,19 @@ class AuthController extends GetxController {
     Get.offAllNamed('/login');
   }
 
+  Future<void> checkAuthAndRedirect() async {
+    if (_user.value != null && _driver.value == null) {
+       // Kullanıcı var ama driver verisi yoksa çekmeyi dene
+       await fetchDriverData(_user.value!.uid);
+    }
+
+    if (_user.value == null) {
+      Get.offAllNamed('/login');
+    } else {
+      Get.offAllNamed('/dashboard');
+    }
+  }
+
   Future<void> launchEmergencySupport() async {
     final Uri whatsappUrl = Uri.parse("https://wa.me/905000000000?text=ACIL%20YARDIM!%20Hukuki%20destek%20istiyorum.");
     try {

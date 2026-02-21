@@ -8,9 +8,20 @@ import 'controllers/auth_controller.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    // Firebase'in zaten başlatılmış olma ihtimalini kontrol et
+    // (Android'de google-services.json varsa otomatik başlatılır)
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    } catch (e) {
+      // Eğer zaten başlatılmışsa, mevcut instance'ı kullan
+      if (e.toString().contains('duplicate-app')) {
+        print("Firebase zaten başlatılmış, mevcut instance kullanılıyor.");
+      } else {
+        rethrow;
+      }
+    }
     
     Get.put(AuthController());
     
@@ -59,12 +70,32 @@ class DriverApp extends StatelessWidget {
       title: 'Ortak Yol',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF1C1C1C),
+        primaryColor: const Color(0xFFFFD700),
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFFFFD700),
+          secondary: Color(0xFFFFD700),
+          surface: Color(0xFF2C2C2C),
+        ),
         fontFamily: 'Roboto',
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
+          backgroundColor: Color(0xFF1C1C1C),
+          foregroundColor: Color(0xFFFFD700),
           elevation: 0,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFFFD700),
+            foregroundColor: Colors.black,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ),
+        snackBarTheme: const SnackBarThemeData(
+          backgroundColor: Color(0xFF2C2C2C),
+          contentTextStyle: TextStyle(color: Colors.white),
         ),
       ),
       initialRoute: AppPages.INITIAL,

@@ -8,6 +8,7 @@ class AdminController extends GetxController {
   
   final RxList<Driver> drivers = <Driver>[].obs;
   final RxList<Payout> payouts = <Payout>[].obs;
+  final RxList<Map<String, dynamic>> penalties = <Map<String, dynamic>>[].obs;
   final RxBool isLoading = false.obs;
   final RxString selectedStatus = 'all'.obs;
 
@@ -16,6 +17,7 @@ class AdminController extends GetxController {
     super.onInit();
     fetchDrivers();
     fetchPayouts();
+    fetchPenalties();
   }
 
   Future<void> fetchDrivers() async {
@@ -116,5 +118,26 @@ class AdminController extends GetxController {
     return payouts
         .where((payout) => payout.status == status)
         .fold(0.0, (sum, payout) => sum + payout.amount);
+  }
+
+  Future<void> fetchPenalties() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
+          .collection('penalties')
+          .orderBy('createdAt', descending: true)
+          .get();
+
+      penalties.value = snapshot.docs.map((doc) {
+        final data = doc.data();
+        data['id'] = doc.id;
+        return data;
+      }).toList();
+    } catch (e) {
+      // Collection might not exist yet
+    }
+  }
+
+  int get pendingPenaltiesCount {
+    return penalties.where((p) => p['status'] == 'pending').length;
   }
 }

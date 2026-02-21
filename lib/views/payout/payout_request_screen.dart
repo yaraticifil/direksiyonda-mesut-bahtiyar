@@ -28,25 +28,23 @@ class _PayoutRequestScreenState extends State<PayoutRequestScreen> {
     final description = descriptionController.text.trim();
 
     if (amountText.isEmpty) {
-      Get.snackbar('Hata', 'Lütfen bir miktar giriniz');
+      Get.snackbar('Uyarı', 'Lütfen bir miktar giriniz');
       return;
     }
 
     double? amount = double.tryParse(amountText);
     if (amount == null || amount <= 0) {
-      Get.snackbar('Hata', 'Geçerli bir miktar giriniz');
+      Get.snackbar('Uyarı', 'Geçerli bir miktar giriniz');
       return;
     }
 
     if (description.isEmpty) {
-      Get.snackbar('Hata', 'Lütfen bir açıklama giriniz');
+      Get.snackbar('Uyarı', 'Lütfen bir açıklama giriniz');
       return;
     }
 
-    // Controller'daki (double amount, String description) imzasına tam uyumlu:
     driverController.requestPayout(amount, description);
 
-    // İşlemden sonra temizle ve geri dön
     amountController.clear();
     descriptionController.clear();
     Get.back();
@@ -55,11 +53,11 @@ class _PayoutRequestScreenState extends State<PayoutRequestScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: const Color(0xFF1C1C1C),
       appBar: AppBar(
         title: const Text('Ödeme Talebi'),
-        backgroundColor: Colors.green,
-        foregroundColor: Colors.white,
+        backgroundColor: const Color(0xFF1C1C1C),
+        foregroundColor: const Color(0xFFFFD700),
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -71,23 +69,39 @@ class _PayoutRequestScreenState extends State<PayoutRequestScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(30),
               decoration: BoxDecoration(
-                color: Colors.green[50],
+                color: const Color(0xFF2C2C2C),
                 borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.green[200]!),
+                border: Border.all(color: const Color(0xFFFFD700).withOpacity(0.3)),
               ),
               child: Column(
                 children: [
-                  Icon(Icons.account_balance_wallet, size: 50, color: Colors.green[700]),
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFD700).withOpacity(0.15),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.account_balance_wallet,
+                      size: 30,
+                      color: Color(0xFFFFD700),
+                    ),
+                  ),
                   const SizedBox(height: 15),
-                  Text(
+                  const Text(
                     'Para Çekme Talebi',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green[700]),
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFFFD700),
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Talebiniz manuel onay için yöneticilere iletilecektir',
+                    'Talebiniz yöneticilere iletilecektir',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14, color: Colors.green[600]),
+                    style: TextStyle(fontSize: 13, color: Colors.grey[500]),
                   ),
                 ],
               ),
@@ -95,7 +109,7 @@ class _PayoutRequestScreenState extends State<PayoutRequestScreen> {
             const SizedBox(height: 30),
             CustomTextField(
               controller: amountController,
-              label: 'Miktar',
+              label: 'Miktar (₺)',
               hint: 'Çekilecek tutarı girin',
               icon: Icons.attach_money,
               keyboardType: TextInputType.number,
@@ -110,10 +124,10 @@ class _PayoutRequestScreenState extends State<PayoutRequestScreen> {
             ),
             const SizedBox(height: 30),
             Obx(() => CustomButton(
-              text: 'Talebi Gönder',
+              text: 'TALEBİ GÖNDER',
               onPressed: _submitRequest,
               isLoading: driverController.isLoading.value,
-              backgroundColor: Colors.green,
+              backgroundColor: const Color(0xFFFFD700),
             )),
           ],
         ),

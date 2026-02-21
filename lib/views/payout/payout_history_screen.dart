@@ -12,11 +12,11 @@ class PayoutHistoryScreen extends StatelessWidget {
     final DriverController driverController = Get.find<DriverController>();
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: const Color(0xFF1C1C1C),
       appBar: AppBar(
-        title: const Text('Payout History'),
-        backgroundColor: Colors.purple,
-        foregroundColor: Colors.white,
+        title: const Text('Ödeme Geçmişi'),
+        backgroundColor: const Color(0xFF1C1C1C),
+        foregroundColor: const Color(0xFFFFD700),
         elevation: 0,
       ),
       body: RefreshIndicator(
@@ -34,18 +34,18 @@ class PayoutHistoryScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    'No payouts yet',
+                    'Henüz ödeme kaydı yok',
                     style: TextStyle(
                       fontSize: 20,
-                      color: Colors.grey[600],
+                      color: Colors.grey[500],
                     ),
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Your payout history will appear here',
+                    'Ödeme geçmişiniz burada görünecek',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey[500],
+                      color: Colors.grey[600],
                     ),
                   ),
                 ],
@@ -70,15 +70,9 @@ class PayoutHistoryScreen extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFF2C2C2C),
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            spreadRadius: 2,
-          ),
-        ],
+        border: Border.all(color: Colors.grey.withOpacity(0.2)),
       ),
       child: Column(
         children: [
@@ -113,19 +107,19 @@ class PayoutHistoryScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        'Requested: ${DateFormat('MMM dd, yyyy • hh:mm a').format(payout.createdAt)}',
+                        'Talep: ${DateFormat('dd.MM.yyyy • HH:mm').format(payout.createdAt)}',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[600],
+                          color: Colors.grey[500],
                         ),
                       ),
                       if (payout.completedAt != null) ...[
                         const SizedBox(height: 2),
                         Text(
-                          'Completed: ${DateFormat('MMM dd, yyyy • hh:mm a').format(payout.completedAt!)}',
+                          'Onaylandı: ${DateFormat('dd.MM.yyyy • HH:mm').format(payout.completedAt!)}',
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.green[600],
+                            color: Colors.green[400],
                           ),
                         ),
                       ],
@@ -136,10 +130,11 @@ class PayoutHistoryScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      '\$${payout.amount.toStringAsFixed(2)}',
+                      '₺${payout.amount.toStringAsFixed(2)}',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: Color(0xFFFFD700),
                       ),
                     ),
                     const SizedBox(height: 5),
@@ -184,7 +179,7 @@ class PayoutHistoryScreen extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Your payout request is being reviewed by administrators',
+                      'Ödeme talebiniz yöneticiler tarafından inceleniyor',
                       style: TextStyle(
                         color: Colors.orange[700],
                         fontSize: 12,

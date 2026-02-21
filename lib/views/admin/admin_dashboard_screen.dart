@@ -21,7 +21,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _checkAdminAccess();
   }
 
@@ -69,6 +69,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
             Tab(text: 'GENEL BAKIŞ'),
             Tab(text: 'SÜRÜCÜLER'),
             Tab(text: 'ÖDEMELER'),
+            Tab(text: 'CEZA BİLDİRİMLERİ'),
           ],
         ),
         actions: [
@@ -77,6 +78,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
             onPressed: () {
               adminController.fetchDrivers();
               adminController.fetchPayouts();
+              adminController.fetchPenalties();
             },
           ),
           IconButton(
@@ -163,6 +165,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                 _buildOverviewTab(),
                 _buildDriversTab(),
                 _buildPayoutsTab(),
+                _buildPenaltiesTab(),
               ],
             ),
           ),
@@ -868,6 +871,87 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPenaltiesTab() {
+    return Container(
+      color: const Color(0xFF1C1C1C),
+      child: Obx(() {
+        if (adminController.penalties.isEmpty) {
+          return Center(
+            child: Text(
+              'Henüz ceza bildirimi yok',
+              style: TextStyle(fontSize: 16, color: Colors.grey[400]),
+            ),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(10),
+          itemCount: adminController.penalties.length,
+          itemBuilder: (context, index) {
+            final penalty = adminController.penalties[index];
+            return Container(
+              margin: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2C2C2C),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.orange.withOpacity(0.5)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Icon(Icons.report_problem, color: Colors.orange, size: 20),
+                      ),
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              penalty['driverName'] ?? 'Anonim',
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                            ),
+                            Text(
+                              'Durum: ${penalty['status'] ?? 'bekliyor'}',
+                              style: TextStyle(fontSize: 12, color: Colors.grey[400]),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (penalty['description'] != null && penalty['description'].toString().isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      penalty['description'],
+                      style: const TextStyle(color: Colors.white70, fontSize: 13),
+                    ),
+                  ],
+                  if (penalty['latitude'] != null) ...[
+                    const SizedBox(height: 5),
+                    Text(
+                      'Konum: ${(penalty['latitude'] as num).toStringAsFixed(4)}, ${(penalty['longitude'] as num).toStringAsFixed(4)}',
+                      style: TextStyle(fontSize: 11, color: Colors.grey[500]),
+                    ),
+                  ],
+                ],
+              ),
+            );
+          },
+        );
+      }),
     );
   }
 
