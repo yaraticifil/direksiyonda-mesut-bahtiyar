@@ -94,17 +94,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
+              gradient: const LinearGradient(
                 colors: [
-                  const Color(0xFF1C1C1C),
-                  const Color(0xFF2C2C2C),
+                  Color(0xFF1C1C1C),
+                  Color(0xFF2C2C2C),
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
               border: Border(
                 bottom: BorderSide(
-                  color: const Color(0xFFFFD700).withOpacity(0.3),
+                  color: const Color(0xFFFFD700).withValues(alpha: 0.3),
                   width: 2,
                 ),
               ),
@@ -180,10 +180,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(15),
           border: Border.all(
-            color: color.withOpacity(0.5),
+            color: color.withValues(alpha: 0.5),
             width: 2,
           ),
         ),
@@ -298,7 +298,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
         color: const Color(0xFF2C2C2C),
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -309,7 +309,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
+              color: color.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
@@ -345,12 +345,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'SON HAREKETLER',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: const Color(0xFFFFD700),
+            color: Color(0xFFFFD700),
           ),
         ),
         const SizedBox(height: 15),
@@ -366,7 +366,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                 color: const Color(0xFF2C2C2C),
                 borderRadius: BorderRadius.circular(15),
                 border: Border.all(
-                  color: Colors.grey.withOpacity(0.3),
+                  color: Colors.grey.withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),
@@ -421,7 +421,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
         color: const Color(0xFF2C2C2C),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: Colors.grey.withOpacity(0.3),
+          color: Colors.grey.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -431,7 +431,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
+              color: color.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Icon(
@@ -552,7 +552,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
         color: const Color(0xFF2C2C2C),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: Colors.grey.withOpacity(0.3),
+          color: Colors.grey.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -699,7 +699,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
         color: const Color(0xFF2C2C2C),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: Colors.grey.withOpacity(0.3),
+          color: Colors.grey.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -712,7 +712,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: Colors.purple.withOpacity(0.2),
+                  color: Colors.purple.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Icon(
@@ -898,7 +898,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
               decoration: BoxDecoration(
                 color: const Color(0xFF2C2C2C),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.orange.withOpacity(0.5)),
+                border: Border.all(color: Colors.orange.withValues(alpha: 0.5)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -909,7 +909,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: Colors.orange.withOpacity(0.2),
+                          color: Colors.orange.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Icon(Icons.report_problem, color: Colors.orange, size: 20),

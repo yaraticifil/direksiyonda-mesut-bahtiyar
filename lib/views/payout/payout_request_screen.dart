@@ -71,7 +71,7 @@ class _PayoutRequestScreenState extends State<PayoutRequestScreen> {
               decoration: BoxDecoration(
                 color: const Color(0xFF2C2C2C),
                 borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: const Color(0xFFFFD700).withOpacity(0.3)),
+                border: Border.all(color: const Color(0xFFFFD700).withValues(alpha: 0.3)),
               ),
               child: Column(
                 children: [
@@ -79,7 +79,7 @@ class _PayoutRequestScreenState extends State<PayoutRequestScreen> {
                     width: 60,
                     height: 60,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFD700).withOpacity(0.15),
+                      color: const Color(0xFFFFD700).withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(

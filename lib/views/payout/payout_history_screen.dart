@@ -72,7 +72,7 @@ class PayoutHistoryScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF2C2C2C),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey.withOpacity(0.2)),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
       ),
       child: Column(
         children: [
@@ -84,7 +84,7 @@ class PayoutHistoryScreen extends StatelessWidget {
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: _getStatusColor(payout.status).withOpacity(0.1),
+                    color: _getStatusColor(payout.status).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(25),
                   ),
                   child: Icon(

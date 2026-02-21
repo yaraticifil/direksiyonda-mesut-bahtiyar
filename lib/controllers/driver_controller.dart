@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import '../models/driver_model.dart';
 import '../models/payout_model.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as p;
 
 class DriverController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -19,15 +20,15 @@ class DriverController extends GetxController {
   Future<void> fetchDriverData(String driverId) async {
     isLoading.value = true;
     try {
-      DocumentSnapshot<Map<String, dynamic>> doc = await _firestore
+      final doc = await _firestore
           .collection('drivers')
           .doc(driverId)
-          .get() as DocumentSnapshot<Map<String, dynamic>>;
+          .get();
       if (doc.exists) {
         driver.value = Driver.fromFirestore(doc);
       }
     } catch (e) {
-      print("Sürücü hatası: $e");
+      debugPrint("Sürücü hatası: $e");
     } finally {
       isLoading.value = false;
     }
@@ -42,7 +43,7 @@ class DriverController extends GetxController {
     isLoading.value = true;
     try {
       final String driverId = driver.value?.id ?? 'unknown';
-      final String fileName = '${DateTime.now().millisecondsSinceEpoch}${path.extension(image.path)}';
+      final String fileName = '${DateTime.now().millisecondsSinceEpoch}${p.extension(image.path)}';
       final Reference storageRef = FirebaseStorage.instance.ref().child('penalties/$driverId/$fileName');
 
       // Upload file
@@ -74,24 +75,24 @@ class DriverController extends GetxController {
     String id = driverId ?? driver.value?.id ?? '';
     if (id.isEmpty) return;
     try {
-      QuerySnapshot<Map<String, dynamic>> snap = await _firestore
-          .collection('payouts').where('driverId', isEqualTo: id).get() as QuerySnapshot<Map<String, dynamic>>;
+      final snap = await _firestore
+          .collection('payouts').where('driverId', isEqualTo: id).get();
       payouts.value = snap.docs.map((doc) => Payout.fromFirestore(doc)).toList();
     } catch (e) {
-      print("Payout hatası: $e");
+      debugPrint("Payout hatası: $e");
     }
   }
 
   double getTotalEarnings() {
     return payouts
         .where((p) => p.status == PayoutStatus.completed)
-        .fold(0, (sum, item) => sum + item.amount);
+        .fold(0.0, (total, item) => total + item.amount);
   }
 
   double getPendingPayouts() {
     return payouts
         .where((p) => p.status == PayoutStatus.pending)
-        .fold(0, (sum, item) => sum + item.amount);
+        .fold(0.0, (total, item) => total + item.amount);
   }
 
   Future<void> requestPayout(double amount, String description) async {

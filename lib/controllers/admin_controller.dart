@@ -117,7 +117,7 @@ class AdminController extends GetxController {
   double getTotalPayoutsByStatus(PayoutStatus status) {
     return payouts
         .where((payout) => payout.status == status)
-        .fold(0.0, (sum, payout) => sum + payout.amount);
+        .fold(0.0, (total, payout) => total + payout.amount);
   }
 
   Future<void> fetchPenalties() async {

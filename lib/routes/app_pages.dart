@@ -14,7 +14,7 @@ import '../views/driver/legal_contract_screen.dart';
 import '../views/driver/penalty_report_screen.dart';
 
 class AppPages {
-  static const INITIAL = '/';
+  static const initial = '/';
 
   static final routes = [
     GetPage(

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import '../models/driver_model.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -34,16 +35,16 @@ class AuthController extends GetxController {
   Future<void> fetchDriverData(String uid) async {
     try {
       // Tip güvenliği sağlandı
-      DocumentSnapshot<Map<String, dynamic>> doc = await _firestore
+      final doc = await _firestore
           .collection('drivers')
           .doc(uid)
-          .get() as DocumentSnapshot<Map<String, dynamic>>;
+          .get();
 
       if (doc.exists) {
         _driver.value = Driver.fromFirestore(doc);
       }
     } catch (e) {
-      print("Veri çekme hatası: $e");
+      debugPrint("Veri çekme hatası: $e");
     }
   }
 

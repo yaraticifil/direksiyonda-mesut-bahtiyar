@@ -75,12 +75,12 @@ class _WaitingScreenState extends State<WaitingScreen> with SingleTickerProvider
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: const Color(0xFFFFD700).withOpacity(0.5),
+                              color: const Color(0xFFFFD700).withValues(alpha: 0.5),
                               width: 2,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFFFFD700).withOpacity(0.2),
+                                color: const Color(0xFFFFD700).withValues(alpha: 0.2),
                                 blurRadius: 30,
                                 spreadRadius: 5,
                               ),
@@ -132,7 +132,7 @@ class _WaitingScreenState extends State<WaitingScreen> with SingleTickerProvider
                       color: const Color(0xFF2C2C2C),
                       borderRadius: BorderRadius.circular(15),
                       border: Border.all(
-                        color: const Color(0xFFFFD700).withOpacity(0.2),
+                        color: const Color(0xFFFFD700).withValues(alpha: 0.2),
                       ),
                     ),
                     child: Column(
@@ -160,9 +160,9 @@ class _WaitingScreenState extends State<WaitingScreen> with SingleTickerProvider
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFFFD700).withOpacity(0.15),
+                                color: const Color(0xFFFFD700).withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: const Color(0xFFFFD700).withOpacity(0.4)),
+                                border: Border.all(color: const Color(0xFFFFD700).withValues(alpha: 0.4)),
                               ),
                               child: const Text(
                                 'BEKLEMEDE',
@@ -186,7 +186,7 @@ class _WaitingScreenState extends State<WaitingScreen> with SingleTickerProvider
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
                       valueColor: AlwaysStoppedAnimation<Color>(
-                        const Color(0xFFFFD700).withOpacity(0.5),
+                        const Color(0xFFFFD700).withValues(alpha: 0.5),
                       ),
                     ),
                   ),

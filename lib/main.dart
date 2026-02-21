@@ -17,7 +17,7 @@ void main() async {
     } catch (e) {
       // Eğer zaten başlatılmışsa, mevcut instance'ı kullan
       if (e.toString().contains('duplicate-app')) {
-        print("Firebase zaten başlatılmış, mevcut instance kullanılıyor.");
+        debugPrint("Firebase zaten başlatılmış, mevcut instance kullanılıyor.");
       } else {
         rethrow;
       }
@@ -27,7 +27,7 @@ void main() async {
     
     runApp(const DriverApp());
   } catch (e) {
-    print("Initialization Error: $e");
+    debugPrint("Initialization Error: $e");
     runApp(ErrorApp(error: e.toString()));
   }
 }
@@ -98,7 +98,7 @@ class DriverApp extends StatelessWidget {
           contentTextStyle: TextStyle(color: Colors.white),
         ),
       ),
-      initialRoute: AppPages.INITIAL,
+      initialRoute: AppPages.initial,
       getPages: AppPages.routes,
     );
   }

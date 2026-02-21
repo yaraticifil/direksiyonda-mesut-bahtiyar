@@ -203,7 +203,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Container(
                   padding: const EdgeInsets.all(15),
                   decoration: BoxDecoration(
-                    border: Border.all(color: const Color(0xFFFFD700).withOpacity(0.2)),
+                    border: Border.all(color: const Color(0xFFFFD700).withValues(alpha: 0.2)),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
