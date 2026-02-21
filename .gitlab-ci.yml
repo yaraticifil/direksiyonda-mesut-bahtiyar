@@ -1,0 +1,11 @@
+pages:
+  stage: deploy
+  script:
+    - mkdir -p public
+    - cp -r landing_page/* public/
+  artifacts:
+    paths:
+      - public
+  only:
+    - upload-temp
+    - main
