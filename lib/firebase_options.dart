@@ -29,12 +29,12 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
-    appId: '1:123456789012:web:abcdef1234567890',
-    messagingSenderId: '123456789012',
-    projectId: 'driver-app-12345',
-    authDomain: 'driver-app-12345.firebaseapp.com',
-    storageBucket: 'driver-app-12345.appspot.com',
+    apiKey: 'AIzaSyAmbCdXX2jKx7QpflPklMjfqwDbToryEFc',
+    appId: '1:772761045864:web:081776d56a2b76bf1bc88576806e7090',
+    messagingSenderId: '772761045864',
+    projectId: 'ortak-yol-driver',
+    authDomain: 'ortak-yol-driver.firebaseapp.com',
+    storageBucket: 'ortak-yol-driver.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
