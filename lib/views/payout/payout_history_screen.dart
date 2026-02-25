@@ -200,6 +200,8 @@ class PayoutHistoryScreen extends StatelessWidget {
         return Colors.orange;
       case PayoutStatus.completed:
         return Colors.green;
+      case PayoutStatus.transferring:
+        return Colors.blue;
       case PayoutStatus.rejected:
         return Colors.red;
     }
@@ -211,6 +213,8 @@ class PayoutHistoryScreen extends StatelessWidget {
         return Icons.hourglass_empty;
       case PayoutStatus.completed:
         return Icons.check_circle;
+      case PayoutStatus.transferring:
+        return Icons.swap_horiz;
       case PayoutStatus.rejected:
         return Icons.cancel;
     }

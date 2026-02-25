@@ -164,7 +164,7 @@ class AuthController extends GetxController {
   /// Auth kontrolü ve role göre yönlendirme
   Future<void> checkAuthAndRedirect() async {
     if (_user.value == null) {
-      Get.offAllNamed('/login');
+      Get.offAllNamed('/role-selection');
       return;
     }
 

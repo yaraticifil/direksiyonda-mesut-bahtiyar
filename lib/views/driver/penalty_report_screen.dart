@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -15,7 +15,7 @@ class PenaltyReportScreen extends StatefulWidget {
 class _PenaltyReportScreenState extends State<PenaltyReportScreen> {
   final DriverController driverController = Get.find<DriverController>();
   final TextEditingController _descriptionController = TextEditingController();
-  File? _selectedImage;
+  XFile? _selectedImage;
   Position? _currentPosition;
   bool _isGettingLocation = false;
 
@@ -25,7 +25,7 @@ class _PenaltyReportScreenState extends State<PenaltyReportScreen> {
     final XFile? pickedFile = await _picker.pickImage(source: source, imageQuality: 50);
     if (pickedFile != null) {
       setState(() {
-        _selectedImage = File(pickedFile.path);
+        _selectedImage = pickedFile;
       });
     }
   }
@@ -111,7 +111,9 @@ class _PenaltyReportScreenState extends State<PenaltyReportScreen> {
                     child: _selectedImage != null
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(15),
-                            child: Image.file(_selectedImage!, fit: BoxFit.cover),
+                            child: kIsWeb 
+                              ? Image.network(_selectedImage!.path, fit: BoxFit.cover)
+                              : Image.network(_selectedImage!.path, fit: BoxFit.cover), // XFile path works for previews in both
                           )
                         : const Column(
                             mainAxisAlignment: MainAxisAlignment.center,

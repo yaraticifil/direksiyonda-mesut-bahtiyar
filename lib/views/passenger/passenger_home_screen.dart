@@ -3,10 +3,12 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/passenger_controller.dart';
 import '../../models/ride_model.dart';
 import '../../services/ride_service.dart';
+import '../../utils/app_colors.dart';
 
 class PassengerHomeScreen extends StatefulWidget {
   const PassengerHomeScreen({super.key});
@@ -105,7 +107,7 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
           _polylines.add(Polyline(
             polylineId: const PolylineId('route'),
             points: [_pickupLocation!, _destLocation!],
-            color: const Color(0xFFFFD700),
+            color: AppColors.primary,
             width: 4,
           ));
         }
@@ -121,15 +123,15 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
 
     Get.dialog(
       AlertDialog(
-        backgroundColor: const Color(0xFF2C2C2C),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        backgroundColor: AppColors.cardBg,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
           children: [
-            Icon(Icons.description, color: Color(0xFFFFD700), size: 22),
-            SizedBox(width: 10),
+            const Icon(Icons.description_rounded, color: AppColors.primary, size: 24),
+            const SizedBox(width: 12),
             Expanded(child: Text(
-              'Tahmini Tutar ve Yolculuk Özeti',
-              style: TextStyle(color: Color(0xFFFFD700), fontSize: 15, fontWeight: FontWeight.bold),
+              'Yolculuk Özeti',
+              style: GoogleFonts.spaceGrotesk(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
             )),
           ],
         ),
@@ -140,48 +142,46 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
             children: [
               _summaryRow('Rota', '$_pickupAddress → $_destAddress', isRoute: true),
               _summaryRow('Araç Segmenti', SegmentConfig.get(fb.segment).label),
-              const Divider(color: Color(0xFF444444), height: 20),
-              _labelText('ÜCRET KIRILIMI', isHeader: true),
-              const SizedBox(height: 8),
+              const Divider(color: AppColors.divider, height: 30),
+              Text(
+                'ÜCRET DETAYLARI',
+                style: GoogleFonts.spaceGrotesk(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2),
+              ),
+              const SizedBox(height: 12),
               _fareRow('Açılış Bedeli', fb.openingFee),
               _fareRow('Mesafe Bedeli', fb.distanceFee),
               if (fb.segmentSurcharge > 0) _fareRow('Segment Farkı', fb.segmentSurcharge),
               if (fb.marketAdjustment > 0) _fareRow('Piyasa Ayarı', fb.marketAdjustment),
-              if (fb.discount > 0) _fareRow('İndirim/Kampanya', -fb.discount, isDiscount: true),
-              const Divider(color: Color(0xFF444444), height: 16),
-              _fareRow('Toplam Araç Bedeli', fb.grossTotal, isBold: true),
-              const SizedBox(height: 12),
-              // Güven metni
+              if (fb.discount > 0) _fareRow('İndirim', -fb.discount, isDiscount: true),
+              const Divider(color: AppColors.divider, height: 24),
+              _fareRow('TOPLAM BEDEL', fb.grossTotal, isBold: true, isGold: true),
+              const SizedBox(height: 20),
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1C1C1C),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFFFFD700).withValues(alpha: 0.2)),
+                  color: AppColors.background,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.primary.withOpacity(0.2)),
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        Icon(Icons.verified_user, color: Color(0xFFFFD700), size: 14),
-                        SizedBox(width: 6),
-                        Text('Bahtiyar Standardı', style: TextStyle(color: Color(0xFFFFD700), fontSize: 11, fontWeight: FontWeight.bold)),
+                        const Icon(Icons.verified_user_rounded, color: AppColors.primary, size: 16),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Bahtiyar Güvencesi',
+                          style: GoogleFonts.spaceGrotesk(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.bold),
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Text(
-                      'Tahmini bedel gösterilir. Nihai ücret, rota ve işlem kayıtlarına göre kesinleştirilir. Komisyon, vergi ve sürücü netleşmesi şeffaf gösterilir.',
-                      style: TextStyle(color: Colors.grey[500], fontSize: 10, height: 1.4),
+                      'Bu yolculuk TBK md. 305 kapsamında hukuk zemininde gerçekleştirilmektedir. Şeffaf fiyatlandırma garantisi sunulur.',
+                      style: GoogleFonts.publicSans(color: AppColors.textSecondary, fontSize: 11, height: 1.4),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                '🛡️ Kısa süreli şoförlü araç kiralama sözleşmesi\nTBK md. 305 vd. kapsamında',
-                style: TextStyle(color: Colors.grey[600], fontSize: 10, fontStyle: FontStyle.italic),
-                textAlign: TextAlign.center,
               ),
             ],
           ),
@@ -189,16 +189,20 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('İptal', style: TextStyle(color: Colors.grey[500])),
+            child: Text('Vazgeç', style: GoogleFonts.publicSans(color: AppColors.textDisabled)),
           ),
           ElevatedButton(
             onPressed: () { Get.back(); _confirmRide(); },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFFFD700),
+              backgroundColor: AppColors.primary,
               foregroundColor: Colors.black,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
-            child: const Text('ONAYLA VE KİRALA', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+            child: Text(
+              'ONAYLA VE KİRALA',
+              style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
@@ -220,6 +224,7 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: Stack(
         children: [
           // Google Maps
@@ -238,21 +243,21 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
             style: _darkMapStyle,
           ),
 
-          // Üst çubuk
+          // Üst Çubuk
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Column(
                 children: [
                   _buildTopBar(),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 15),
                   _buildSearchBar(),
                 ],
               ),
             ),
           ),
 
-          // Aktif yolculuk overlay
+          // Aktif Yolculuk Paneli
           Obx(() {
             final ride = pc.currentRide.value;
             if (ride != null && ride.status != RideStatus.completed && ride.status != RideStatus.cancelled) {
@@ -261,19 +266,19 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
             return const SizedBox.shrink();
           }),
 
-          // Alt panel — fare + segment + KİRALA
+          // Alt Panel (Fiyat & Segment)
           if (_showFarePanel)
             Positioned(bottom: 0, left: 0, right: 0, child: _buildFarePanel()),
 
-          // Konum butonu
+          // Konum Butonu
           Positioned(
-            bottom: _showFarePanel ? 300 : 30,
-            right: 16,
+            bottom: _showFarePanel ? 320 : 30,
+            right: 20,
             child: FloatingActionButton(
               mini: true,
-              backgroundColor: const Color(0xFF2C2C2C),
+              backgroundColor: AppColors.cardBg,
               onPressed: _initLocation,
-              child: const Icon(Icons.my_location, color: Color(0xFFFFD700)),
+              child: const Icon(Icons.my_location, color: AppColors.primary),
             ),
           ),
         ],
@@ -286,27 +291,35 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
-            color: const Color(0xFF1C1C1C),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 10)],
+            color: AppColors.background,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.4), blurRadius: 15, offset: const Offset(0, 4))],
           ),
-          child: const Row(
+          child: Row(
             children: [
-              Icon(Icons.handshake, color: Color(0xFFFFD700), size: 20),
-              SizedBox(width: 8),
-              Text('ORTAK YOL', style: TextStyle(color: Color(0xFFFFD700), fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: 2)),
+              const Icon(Icons.handshake_rounded, color: AppColors.primary, size: 20),
+              const SizedBox(width: 10),
+              Text(
+                'ORTAK YOL',
+                style: GoogleFonts.spaceGrotesk(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 14,
+                  letterSpacing: 2,
+                ),
+              ),
             ],
           ),
         ),
         Row(
           children: [
-            _topBtn(Icons.history, () => Get.toNamed('/ride-history')),
-            const SizedBox(width: 8),
-            _topBtn(Icons.sos, () => authController.launchEmergencySupport()),
-            const SizedBox(width: 8),
-            _topBtn(Icons.logout, () => authController.logout()),
+            _topBtn(Icons.history_rounded, () => Get.toNamed('/ride-history')),
+            const SizedBox(width: 10),
+            _topBtn(Icons.sos_rounded, () => authController.launchEmergencySupport()),
+            const SizedBox(width: 10),
+            _topBtn(Icons.logout_rounded, () => authController.logout()),
           ],
         ),
       ],
@@ -317,13 +330,13 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: const Color(0xFF1C1C1C),
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 10)],
+          color: AppColors.background,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.4), blurRadius: 15, offset: const Offset(0, 4))],
         ),
-        child: Icon(icon, color: Colors.grey[400], size: 20),
+        child: Icon(icon, color: AppColors.textSecondary, size: 20),
       ),
     );
   }
@@ -331,47 +344,53 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
   Widget _buildSearchBar() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF2C2C2C),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFFFD700).withValues(alpha: 0.3)),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 15)],
+        color: AppColors.cardBg,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.divider),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 8))],
       ),
       child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            child: Row(
-              children: [
-                const Icon(Icons.my_location, color: Colors.green, size: 18),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(_pickupAddress, style: TextStyle(color: Colors.grey[400], fontSize: 13), overflow: TextOverflow.ellipsis),
-                ),
-              ],
-            ),
+          _searchRow(Icons.my_location_rounded, Colors.green, _pickupAddress, isReadOnly: true),
+          const Divider(color: AppColors.divider, height: 1),
+          _searchRow(
+            Icons.location_on_rounded, 
+            AppColors.primary, 
+            'Nereye gitmek istiyorsun?',
+            controller: _destController,
+            onSubmitted: _searchDest,
           ),
-          Divider(color: Colors.grey[700], height: 1),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            child: Row(
-              children: [
-                const Icon(Icons.location_on, color: Color(0xFFFFD700), size: 18),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextField(
-                    controller: _destController,
-                    style: const TextStyle(color: Colors.white, fontSize: 14),
-                    decoration: InputDecoration(hintText: 'Nereye gitmek istiyorsun?', hintStyle: TextStyle(color: Colors.grey[600]), border: InputBorder.none),
-                    onSubmitted: _searchDest,
+        ],
+      ),
+    );
+  }
+
+  Widget _searchRow(IconData icon, Color iconColor, String hint, {bool isReadOnly = false, TextEditingController? controller, Function(String)? onSubmitted}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Row(
+        children: [
+          Icon(icon, color: iconColor, size: 20),
+          const SizedBox(width: 16),
+          Expanded(
+            child: isReadOnly 
+                ? Text(hint, style: GoogleFonts.publicSans(color: AppColors.textSecondary, fontSize: 14), overflow: TextOverflow.ellipsis)
+                : TextField(
+                    controller: controller,
+                    style: GoogleFonts.publicSans(color: Colors.white, fontSize: 14),
+                    decoration: InputDecoration(
+                      hintText: hint,
+                      hintStyle: GoogleFonts.publicSans(color: AppColors.textDisabled),
+                      border: InputBorder.none,
+                    ),
+                    onSubmitted: onSubmitted,
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.search, color: Color(0xFFFFD700)),
-                  onPressed: () => _searchDest(_destController.text),
-                ),
-              ],
-            ),
           ),
+          if (!isReadOnly)
+            IconButton(
+              icon: const Icon(Icons.search_rounded, color: AppColors.primary),
+              onPressed: () => onSubmitted?.call(controller?.text ?? ''),
+            ),
         ],
       ),
     );
@@ -379,20 +398,20 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
 
   Widget _buildFarePanel() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFF1C1C1C),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        border: Border(top: BorderSide(color: const Color(0xFFFFD700).withValues(alpha: 0.3))),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 20, offset: const Offset(0, -5))],
+        color: AppColors.background,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        border: Border(top: BorderSide(color: AppColors.primary.withOpacity(0.3))),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.6), blurRadius: 30, offset: const Offset(0, -10))],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[700], borderRadius: BorderRadius.circular(2))),
-          const SizedBox(height: 12),
+          Container(width: 40, height: 4, decoration: BoxDecoration(color: AppColors.divider, borderRadius: BorderRadius.circular(2))),
+          const SizedBox(height: 20),
 
-          // Segment seçici
+          // Segment Seçici
           Obx(() => Row(
             children: VehicleSegment.values.map((seg) {
               final config = SegmentConfig.get(seg);
@@ -400,25 +419,34 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
               return Expanded(
                 child: GestureDetector(
                   onTap: () => pc.setSegment(seg),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 3),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    margin: const EdgeInsets.symmetric(horizontal: 5),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
-                      color: isSelected ? const Color(0xFFFFD700) : const Color(0xFF2C2C2C),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: isSelected ? const Color(0xFFFFD700) : Colors.grey[700]!),
+                      color: isSelected ? AppColors.primary : AppColors.cardBg,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: isSelected ? AppColors.primary : AppColors.divider),
                     ),
                     child: Column(
                       children: [
-                        Text(config.icon, style: const TextStyle(fontSize: 18)),
-                        const SizedBox(height: 2),
-                        Text(config.label, style: TextStyle(
-                          fontSize: 11, fontWeight: FontWeight.bold,
-                          color: isSelected ? Colors.black : Colors.grey[500],
-                        )),
-                        Text('×${config.multiplier}', style: TextStyle(
-                          fontSize: 9, color: isSelected ? Colors.black54 : Colors.grey[600],
-                        )),
+                        Text(config.icon, style: const TextStyle(fontSize: 22)),
+                        const SizedBox(height: 4),
+                        Text(
+                          config.label,
+                          style: GoogleFonts.spaceGrotesk(
+                            fontSize: 12, 
+                            fontWeight: FontWeight.bold,
+                            color: isSelected ? Colors.black : AppColors.textPrimary,
+                          ),
+                        ),
+                        Text(
+                          '×${config.multiplier}',
+                          style: GoogleFonts.publicSans(
+                            fontSize: 10, 
+                            color: isSelected ? Colors.black54 : AppColors.textDisabled,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -426,58 +454,65 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
               );
             }).toList(),
           )),
-          const SizedBox(height: 10),
+          const SizedBox(height: 20),
 
-          const SizedBox(height: 12),
-
-          // Fiyat özeti
+          // Fiyat Özeti
           Obx(() {
             final fb = pc.fareBreakdown.value;
             if (fb == null) return const SizedBox.shrink();
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(_destAddress, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
-                    const SizedBox(height: 2),
-                    Text('~${fb.distanceKm.toStringAsFixed(1)} km • ${fb.estimatedMinutes} dk', style: TextStyle(color: Colors.grey[500], fontSize: 11)),
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _destAddress, 
+                        style: GoogleFonts.spaceGrotesk(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${fb.distanceKm.toStringAsFixed(1)} km • ~${fb.estimatedMinutes} dakika',
+                        style: GoogleFonts.publicSans(color: AppColors.textSecondary, fontSize: 12),
+                      ),
+                    ],
+                  ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      '₺${fb.grossTotal.toStringAsFixed(0)}',
-                      style: const TextStyle(color: Color(0xFFFFD700), fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                Text(
+                  '₺${fb.grossTotal.toStringAsFixed(0)}',
+                  style: GoogleFonts.spaceGrotesk(color: AppColors.primary, fontSize: 28, fontWeight: FontWeight.w900),
                 ),
               ],
             );
           }),
-          const SizedBox(height: 12),
+          const SizedBox(height: 24),
 
-          // KİRALA butonu
+          // Buton
           SizedBox(
-            width: double.infinity, height: 50,
+            width: double.infinity,
             child: Obx(() => ElevatedButton(
               onPressed: pc.isLoading.value ? null : _showRentalAgreement,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFFD700),
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.black,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 elevation: 0,
               ),
               child: pc.isLoading.value
                 ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
-                : const Row(
+                : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.local_taxi, size: 22),
-                      SizedBox(width: 10),
-                      Text('KİRALA', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                      const Icon(Icons.bolt_rounded, size: 24),
+                      const SizedBox(width: 10),
+                      Text(
+                        'ONAYLA VE KİRALA',
+                        style: GoogleFonts.spaceGrotesk(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1),
+                      ),
                     ],
                   ),
             )),
@@ -491,83 +526,98 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
     return Positioned(
       bottom: 0, left: 0, right: 0,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: const Color(0xFF1C1C1C),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          border: Border(top: BorderSide(color: const Color(0xFFFFD700).withValues(alpha: 0.5))),
+          color: AppColors.background,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          border: Border(top: BorderSide(color: _statusColor(ride.status).withOpacity(0.5))),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.6), blurRadius: 30, offset: const Offset(0, -10))],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[700], borderRadius: BorderRadius.circular(2))),
-            const SizedBox(height: 16),
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: AppColors.divider, borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 20),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
-                color: _statusColor(ride.status).withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: _statusColor(ride.status).withValues(alpha: 0.4)),
+                color: _statusColor(ride.status).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: _statusColor(ride.status).withOpacity(0.3)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(_statusIcon(ride.status), color: _statusColor(ride.status), size: 20),
-                  const SizedBox(width: 10),
-                  Text(ride.statusText, style: TextStyle(color: _statusColor(ride.status), fontWeight: FontWeight.bold, fontSize: 15)),
+                  Icon(_statusIcon(ride.status), color: _statusColor(ride.status), size: 24),
+                  const SizedBox(width: 12),
+                  Text(
+                    ride.statusText,
+                    style: GoogleFonts.spaceGrotesk(color: _statusColor(ride.status), fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             if (ride.driverName != null) ...[
               Row(
                 children: [
                   Container(
-                    width: 45, height: 45,
-                    decoration: BoxDecoration(color: const Color(0xFFFFD700).withValues(alpha: 0.15), borderRadius: BorderRadius.circular(23)),
-                    child: const Icon(Icons.person, color: Color(0xFFFFD700), size: 24),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(ride.driverName!, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
-                      Text(ride.driverPhone ?? '', style: TextStyle(color: Colors.grey[500], fontSize: 12)),
-                    ],
-                  )),
-                  if (ride.driverPhone != null)
-                    IconButton(
-                      onPressed: () async => await launchUrl(Uri.parse('tel:${ride.driverPhone}')),
-                      icon: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
-                        child: const Icon(Icons.phone, color: Colors.green, size: 20),
-                      ),
+                    width: 54, height: 54,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: AppColors.primary.withOpacity(0.3)),
                     ),
+                    child: const Icon(Icons.person_rounded, color: AppColors.primary, size: 30),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          ride.driverName!,
+                          style: GoogleFonts.spaceGrotesk(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 17),
+                        ),
+                        Text(
+                          ride.driverPhone ?? '',
+                          style: GoogleFonts.publicSans(color: AppColors.textSecondary, fontSize: 13),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (ride.driverPhone != null)
+                    _actionBtn(Icons.phone_rounded, Colors.green, () async => await launchUrl(Uri.parse('tel:${ride.driverPhone}'))),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 20),
             ],
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Kiralama Bedeli', style: TextStyle(color: Colors.grey[500], fontSize: 13)),
-                Text('₺${ride.grossTotal.toStringAsFixed(0)}', style: const TextStyle(color: Color(0xFFFFD700), fontWeight: FontWeight.bold, fontSize: 18)),
+                Text('Kiralama Bedeli', style: GoogleFonts.publicSans(color: AppColors.textSecondary, fontSize: 14)),
+                Text(
+                  '₺${ride.grossTotal.toStringAsFixed(0)}',
+                  style: GoogleFonts.spaceGrotesk(color: AppColors.primary, fontWeight: FontWeight.w900, fontSize: 22),
+                ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 24),
             if (ride.status == RideStatus.searching || ride.status == RideStatus.matched)
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
                   onPressed: () => pc.cancelRide(),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.red,
-                    side: const BorderSide(color: Colors.red),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    foregroundColor: AppColors.error,
+                    side: const BorderSide(color: AppColors.error),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: const Text('YOLCULUĞU İPTAL ET', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text(
+                    'YOLCULUĞU İPTAL ET',
+                    style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
           ],
@@ -576,33 +626,40 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
     );
   }
 
-  // ── Yardımcı widgetlar ──
-  Widget _summaryRow(String label, String value, {bool isRoute = false}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(width: 100, child: Text(label, style: TextStyle(color: Colors.grey[500], fontSize: 11))),
-          Expanded(child: Text(value, style: TextStyle(color: Colors.white, fontSize: isRoute ? 11 : 12))),
-        ],
+  Widget _actionBtn(IconData icon, Color color, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: color.withOpacity(0.3)),
+        ),
+        child: Icon(icon, color: color, size: 24),
       ),
     );
   }
 
-  Widget _fareRow(String label, double amount, {bool isBold = false, bool isGold = false, bool isDiscount = false}) {
+  // ── Yardımcı widgetlar ──
+  Widget _summaryRow(String label, String value, {bool isRoute = false}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(color: isBold ? Colors.white : Colors.grey[400], fontSize: 12, fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
-          Text(
-            '${isDiscount ? "-" : ""}₺${amount.abs().toStringAsFixed(2)}',
-            style: TextStyle(
-              color: isGold ? const Color(0xFFFFD700) : (isDiscount ? Colors.green : Colors.white),
-              fontSize: isBold ? 14 : 12,
-              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+          SizedBox(
+            width: 100,
+            child: Text(label, style: GoogleFonts.publicSans(color: AppColors.textDisabled, fontSize: 12)),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: GoogleFonts.publicSans(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: isRoute ? FontWeight.normal : FontWeight.bold,
+              ),
             ),
           ),
         ],
@@ -610,27 +667,50 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
     );
   }
 
-  Widget _labelText(String text, {bool isHeader = false}) {
-    return Text(text, style: TextStyle(color: const Color(0xFFFFD700), fontSize: isHeader ? 11 : 10, fontWeight: FontWeight.bold, letterSpacing: 1));
+  Widget _fareRow(String label, double amount, {bool isBold = false, bool isGold = false, bool isDiscount = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.publicSans(
+              color: isBold ? Colors.white : AppColors.textSecondary,
+              fontSize: 13,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+          Text(
+            '${isDiscount ? "-" : ""}₺${amount.abs().toStringAsFixed(2)}',
+            style: GoogleFonts.spaceGrotesk(
+              color: isGold ? AppColors.primary : (isDiscount ? AppColors.success : Colors.white),
+              fontSize: isBold ? 16 : 13,
+              fontWeight: isBold ? FontWeight.w900 : FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Color _statusColor(RideStatus s) {
     switch (s) {
-      case RideStatus.searching: return Colors.orange;
-      case RideStatus.matched: case RideStatus.driverArriving: return Colors.blue;
-      case RideStatus.inProgress: case RideStatus.completed: return Colors.green;
-      case RideStatus.cancelled: return Colors.red;
+      case RideStatus.searching: return AppColors.warning;
+      case RideStatus.matched: case RideStatus.driverArriving: return AppColors.info;
+      case RideStatus.inProgress: case RideStatus.completed: return AppColors.success;
+      case RideStatus.cancelled: return AppColors.error;
     }
   }
 
   IconData _statusIcon(RideStatus s) {
     switch (s) {
-      case RideStatus.searching: return Icons.search;
-      case RideStatus.matched: return Icons.check_circle;
-      case RideStatus.driverArriving: return Icons.directions_car;
-      case RideStatus.inProgress: return Icons.navigation;
-      case RideStatus.completed: return Icons.flag;
-      case RideStatus.cancelled: return Icons.cancel;
+      case RideStatus.searching: return Icons.radar_rounded;
+      case RideStatus.matched: return Icons.check_circle_rounded;
+      case RideStatus.driverArriving: return Icons.directions_car_rounded;
+      case RideStatus.inProgress: return Icons.navigation_rounded;
+      case RideStatus.completed: return Icons.flag_rounded;
+      case RideStatus.cancelled: return Icons.cancel_rounded;
     }
   }
 

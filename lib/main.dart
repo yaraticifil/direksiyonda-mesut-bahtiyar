@@ -1,27 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 import 'routes/app_pages.dart';
 import 'controllers/auth_controller.dart';
+import 'utils/app_colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
-    // Firebase'in zaten başlatılmış olma ihtimalini kontrol et
-    // (Android'de google-services.json varsa otomatik başlatılır)
-    try {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
-    } catch (e) {
-      // Eğer zaten başlatılmışsa, mevcut instance'ı kullan
-      if (e.toString().contains('duplicate-app')) {
-        debugPrint("Firebase zaten başlatılmış, mevcut instance kullanılıyor.");
-      } else {
-        rethrow;
-      }
-    }
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     
     Get.put(AuthController());
     
@@ -71,33 +62,45 @@ class DriverApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF1C1C1C),
-        primaryColor: const Color(0xFFFFD700),
+        scaffoldBackgroundColor: AppColors.background,
+        primaryColor: AppColors.primary,
         colorScheme: const ColorScheme.dark(
-          primary: Color(0xFFFFD700),
-          secondary: Color(0xFFFFD700),
-          surface: Color(0xFF2C2C2C),
+          primary: AppColors.primary,
+          secondary: AppColors.primary,
+          surface: AppColors.cardBg,
+          onSurface: AppColors.textPrimary,
         ),
-        fontFamily: 'Roboto',
+        // Premium Typography: Space Grotesk for Headings, Public Sans for body
+        textTheme: GoogleFonts.spaceGroteskTextTheme(
+          ThemeData.dark().textTheme.copyWith(
+            bodyLarge: GoogleFonts.publicSans(color: AppColors.textPrimary),
+            bodyMedium: GoogleFonts.publicSans(color: AppColors.textSecondary),
+          ),
+        ),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF1C1C1C),
-          foregroundColor: Color(0xFFFFD700),
+          backgroundColor: AppColors.background,
+          foregroundColor: AppColors.primary,
           elevation: 0,
+          titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFFFD700),
+            backgroundColor: AppColors.primary,
             foregroundColor: Colors.black,
+            textStyle: const TextStyle(fontWeight: FontWeight.bold),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
             ),
+            padding: const EdgeInsets.symmetric(vertical: 16),
           ),
         ),
-        snackBarTheme: const SnackBarThemeData(
-          backgroundColor: Color(0xFF2C2C2C),
-          contentTextStyle: TextStyle(color: Colors.white),
-        ),
+        dividerColor: AppColors.divider,
       ),
+      // Codex Fix P1: Preserve SplashScreen as entry for Auth Check
       initialRoute: AppPages.initial,
       getPages: AppPages.routes,
     );

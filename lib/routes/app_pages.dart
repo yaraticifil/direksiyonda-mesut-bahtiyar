@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import '../views/splash_screen.dart';
+import '../views/role_selection_screen.dart';
 import '../views/auth/register_screen.dart';
 import '../views/auth/login_screen.dart';
 import '../views/driver/waiting_screen.dart';
@@ -16,7 +17,11 @@ import '../views/driver/penalty_report_screen.dart';
 import '../views/passenger/passenger_home_screen.dart';
 import '../views/passenger/ride_history_screen.dart';
 import '../views/driver/fair_earnings_screen.dart';
+import '../views/admin/compensation_screen.dart';
 import '../views/driver/ride_detail_screen.dart';
+import '../views/driver/driver_kyc_screen.dart';
+import '../views/driver/trip_management_screen.dart';
+import '../views/admin/admin_audit_screen.dart';
 
 class AppPages {
   static const initial = '/';
@@ -26,6 +31,31 @@ class AppPages {
       name: '/',
       page: () => const SplashScreen(),
       binding: AuthBinding(),
+    ),
+    GetPage(
+      name: '/trip-management',
+      page: () => const TripManagementScreen(),
+      binding: DriverBinding(),
+    ),
+    GetPage(
+      name: '/compensation',
+      page: () => const CompensationScreen(),
+      binding: AdminBinding(),
+    ),
+    GetPage(
+      name: '/admin-audit',
+      page: () => const AdminAuditScreen(),
+      binding: AdminBinding(),
+    ),
+    GetPage(
+      name: '/role-selection',
+      page: () => const RoleSelectionScreen(),
+      binding: AuthBinding(),
+    ),
+    GetPage(
+      name: '/driver-kyc',
+      page: () => const DriverKycScreen(),
+      binding: DriverBinding(),
     ),
     GetPage(
       name: '/register',

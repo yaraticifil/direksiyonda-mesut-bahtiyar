@@ -124,19 +124,7 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _miniInfo('Mesafe', '${ride.distanceKm.toStringAsFixed(1)} km'),
-              _miniInfo('Süre', '${ride.estimatedMinutes} dk'),
-              _miniInfo('Kişi', '${ride.personCount}'),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  if (ride.personCount > 1) Text('Toplam: ₺${ride.grossTotal.toStringAsFixed(0)}', style: TextStyle(color: Colors.grey[500], fontSize: 9)),
-                  Text(
-                    ride.personCount > 1 ? '₺${ride.perPersonFee.toStringAsFixed(0)} / kişi' : '₺${ride.grossTotal.toStringAsFixed(0)}',
-                    style: const TextStyle(color: Color(0xFFFFD700), fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  Text('Kiralama Bedeli', style: TextStyle(color: Colors.grey[600], fontSize: 9)),
-                ],
-              ),
+              _miniInfo('Fiyat', '₺${ride.grossTotal.toStringAsFixed(0)}'),
             ],
           ),
         ],

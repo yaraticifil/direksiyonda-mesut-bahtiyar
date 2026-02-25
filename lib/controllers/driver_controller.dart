@@ -7,7 +7,9 @@ import '../models/driver_model.dart';
 import '../models/payout_model.dart';
 import '../models/ride_model.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:universal_io/io.dart' as uio;
 import 'package:path/path.dart' as p;
 
 class DriverController extends GetxController {
@@ -204,7 +206,7 @@ class DriverController extends GetxController {
   }
 
   Future<void> reportPenalty({
-    required File image,
+    required XFile image,
     required String description,
     required double latitude,
     required double longitude,
@@ -216,7 +218,17 @@ class DriverController extends GetxController {
       final Reference storageRef = FirebaseStorage.instance.ref().child('penalties/$driverId/$fileName');
 
       // Upload file
-      final UploadTask uploadTask = storageRef.putFile(image);
+      final String contentType = p.extension(image.path).replaceAll('.', '');
+      final SettableMetadata metadata = SettableMetadata(contentType: 'image/$contentType');
+      
+      final UploadTask uploadTask;
+      if (kIsWeb) {
+        final byteData = await image.readAsBytes();
+        uploadTask = storageRef.putData(byteData, metadata);
+      } else {
+        uploadTask = storageRef.putFile(uio.File(image.path), metadata);
+      }
+      
       final TaskSnapshot snapshot = await uploadTask;
       final String downloadUrl = await snapshot.ref.getDownloadURL();
 
@@ -280,6 +292,14 @@ class DriverController extends GetxController {
       Get.snackbar("Hata", "Talep gönderilemedi");
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> toggleOnlineStatus() async {
+    if (isOnline.value) {
+      await goOffline();
+    } else {
+      await goOnline();
     }
   }
 }
