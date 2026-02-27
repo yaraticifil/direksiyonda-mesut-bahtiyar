@@ -50,7 +50,10 @@ class AuthController extends GetxController {
       }
 
       // Sonra passengers koleksiyonuna bak
-      final passengerDoc = await _firestore.collection('passengers').doc(uid).get();
+      final passengerDoc = await _firestore
+          .collection('passengers')
+          .doc(uid)
+          .get();
       if (passengerDoc.exists) {
         _passenger.value = Passenger.fromFirestore(passengerDoc);
         userRole.value = 'passenger';
@@ -87,14 +90,24 @@ class AuthController extends GetxController {
   }
 
   // Eski referanslar için bırakıldı
-  Future<void> loginDriver(String email, String password) async => login(email, password);
-  Future<void> loginAdmin(String email, String password) async => login(email, password);
+  Future<void> loginDriver(String email, String password) async =>
+      login(email, password);
+  Future<void> loginAdmin(String email, String password) async =>
+      login(email, password);
 
   /// Sürücü kaydı
-  Future<void> registerDriver(String name, String email, String password, String phone) async {
+  Future<void> registerDriver(
+    String name,
+    String email,
+    String password,
+    String phone,
+  ) async {
     isLoading.value = true;
     try {
-      UserCredential res = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      UserCredential res = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       Driver d = Driver(
         id: res.user!.uid,
         name: name,
@@ -107,20 +120,33 @@ class AuthController extends GetxController {
         await _firestore.collection('drivers').doc(d.id).set(d.toMap());
       } catch (firestoreError) {
         await res.user!.delete();
-        throw "Veritabanı hatası: $firestoreError. Lütfen tekrar deneyin.";
+        debugPrint("Veritabanı hatası: $firestoreError");
+        throw "Veritabanı hatası. Lütfen tekrar deneyin.";
       }
     } catch (e) {
-      Get.snackbar("Hata", "Kayıt hatası: $e", duration: const Duration(seconds: 5));
+      Get.snackbar(
+        "Hata",
+        "Kayıt hatası: $e",
+        duration: const Duration(seconds: 5),
+      );
     } finally {
       isLoading.value = false;
     }
   }
 
   /// Yolcu kaydı
-  Future<void> registerPassenger(String name, String email, String password, String phone) async {
+  Future<void> registerPassenger(
+    String name,
+    String email,
+    String password,
+    String phone,
+  ) async {
     isLoading.value = true;
     try {
-      UserCredential res = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      UserCredential res = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       Passenger p = Passenger(
         id: res.user!.uid,
         name: name,
@@ -133,10 +159,15 @@ class AuthController extends GetxController {
         await _firestore.collection('passengers').doc(p.id).set(p.toMap());
       } catch (firestoreError) {
         await res.user!.delete();
-        throw "Veritabanı hatası: $firestoreError. Lütfen tekrar deneyin.";
+        debugPrint("Veritabanı hatası: $firestoreError");
+        throw "Veritabanı hatası. Lütfen tekrar deneyin.";
       }
     } catch (e) {
-      Get.snackbar("Hata", "Kayıt hatası: $e", duration: const Duration(seconds: 5));
+      Get.snackbar(
+        "Hata",
+        "Kayıt hatası: $e",
+        duration: const Duration(seconds: 5),
+      );
     } finally {
       isLoading.value = false;
     }
@@ -146,8 +177,11 @@ class AuthController extends GetxController {
   Future<void> resetPassword(String email) async {
     try {
       await _auth.sendPasswordResetEmail(email: email);
-      Get.snackbar("Başarılı", "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.",
-          duration: const Duration(seconds: 5));
+      Get.snackbar(
+        "Başarılı",
+        "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.",
+        duration: const Duration(seconds: 5),
+      );
     } catch (e) {
       Get.snackbar("Hata", "Şifre sıfırlama hatası: $e");
     }
@@ -194,7 +228,9 @@ class AuthController extends GetxController {
 
   /// Acil destek — WhatsApp, arama ve SMS
   Future<void> launchEmergencySupport() async {
-    final Uri whatsappUrl = Uri.parse("https://wa.me/905407254626?text=ACIL%20YARDIM!%20Hukuki%20destek%20istiyorum.");
+    final Uri whatsappUrl = Uri.parse(
+      "https://wa.me/905407254626?text=ACIL%20YARDIM!%20Hukuki%20destek%20istiyorum.",
+    );
     try {
       if (await canLaunchUrl(whatsappUrl)) {
         await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
