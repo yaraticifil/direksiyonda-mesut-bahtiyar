@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../models/ride_model.dart';
+import '../../models/ride_model.dart' show Ride;
 import '../../services/ride_service.dart';
 
 /// Ekran 4 — Yolculuk Detayı ve Netleşme (Sürücü Derin Görünüm)
