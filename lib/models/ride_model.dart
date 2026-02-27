@@ -151,6 +151,7 @@ class Ride {
   }
 
   String get segmentLabel => SegmentConfig.get(segment).label;
+  String get segmentIcon => SegmentConfig.get(segment).icon;
 
   Map<String, dynamic> toMap() {
     return {

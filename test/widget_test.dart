@@ -5,6 +5,6 @@ void main() {
   testWidgets('Uygulama başlangıç testi', (WidgetTester tester) async {
     await tester.pumpWidget(const DriverApp());
 
-    expect(find.text('Ortak Yol'), findsOneWidget);
+    expect(find.text("Ortak Yol"), findsOneWidget);
   });
 }
