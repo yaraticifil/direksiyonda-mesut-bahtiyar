@@ -16,6 +16,8 @@ if (localPropertiesFile.exists()) {
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode') ?: '1'
 def flutterVersionName = localProperties.getProperty('flutter.versionName') ?: '1.0'
 
+def googleMapsApiKey = localProperties.getProperty('GOOGLE_MAPS_API_KEY') ?: ''
+
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file('key.properties')
 if (keystorePropertiesFile.exists()) {
@@ -57,6 +59,9 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
+        manifestPlaceholders = [
+            GOOGLE_MAPS_API_KEY: googleMapsApiKey
+        ]
     }
 
     buildTypes {
