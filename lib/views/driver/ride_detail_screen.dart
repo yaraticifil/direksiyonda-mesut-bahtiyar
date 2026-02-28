@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../models/ride_model.dart';
-import '../../services/ride_service.dart';
 
 /// Ekran 4 — Yolculuk Detayı ve Netleşme (Sürücü Derin Görünüm)
 class RideDetailScreen extends StatelessWidget {
@@ -10,7 +9,7 @@ class RideDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Ride ride = Get.arguments as Ride;
-    final config = SegmentConfig.get(ride.segment);
+
 
     return Scaffold(
       backgroundColor: const Color(0xFF1C1C1C),
@@ -57,7 +56,7 @@ class RideDetailScreen extends StatelessWidget {
               const SizedBox(height: 8),
               _info('Gerçekleşen Mesafe', '${ride.distanceKm.toStringAsFixed(1)} km'),
               _info('Gerçekleşen Süre', '${ride.estimatedMinutes} dk'),
-              _info('Segment', '${config.icon} ${config.label}'),
+              _info('Segment', '${ride.segmentIcon} ${ride.segmentLabel}'),
               _info('Paylaşım Kişi Sayısı', '${ride.personCount}'),
             ]),
             const SizedBox(height: 16),
