@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "772761045864",
+    "project_id": "ortak-yol-driver",
+    "storage_bucket": "ortak-yol-driver.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:772761045864:android:e56a8886368d1db3b0a4dd",
+        "android_client_info": {
+          "package_name": "com.ortakyol.driver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmbCdXX2jKx7QpflPklMjfqwDbToryEFc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
