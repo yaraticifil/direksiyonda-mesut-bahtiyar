@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
+import '../legal/legal_texts.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -95,32 +96,28 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'DİREKSİYON EMEKÇİLERİ PLATFORMU',
+                  LegalTexts.driverSplashTitle,
                   style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[400],
-                    letterSpacing: 3,
-                    fontWeight: FontWeight.w300,
+                    fontSize: 14,
+                    color: Colors.grey[300],
+                    fontWeight: FontWeight.w500,
                   ),
+                  textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 16),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
                   decoration: BoxDecoration(
                     border: Border.all(color: const Color(0xFFFFD700).withValues(alpha: 0.3)),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Column(
-                    children: [
-                      Text(
-                        '"Plakam yok belki ama yolum belli."',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.grey[300],
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    LegalTexts.driverSplashSubtitle,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey[300],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 50),

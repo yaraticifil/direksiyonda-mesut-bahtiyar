@@ -22,6 +22,10 @@ import '../views/driver/ride_detail_screen.dart';
 import '../views/driver/driver_kyc_screen.dart';
 import '../views/driver/trip_management_screen.dart';
 import '../views/admin/admin_audit_screen.dart';
+import '../legal/privacy_policy_page.dart';
+import '../legal/clarification_page.dart';
+import '../legal/terms_page.dart';
+import '../legal/data_deletion_page.dart';
 
 class AppPages {
   static const initial = '/';
@@ -123,6 +127,23 @@ class AppPages {
       name: '/ride-detail',
       page: () => const RideDetailScreen(),
       binding: DriverBinding(),
+    ),
+    // ─── HUKUKİ / BİLGİLENDİRME SAYFALARI ───
+    GetPage(
+      name: '/privacy-policy',
+      page: () => const PrivacyPolicyPage(),
+    ),
+    GetPage(
+      name: '/clarification',
+      page: () => const ClarificationPage(),
+    ),
+    GetPage(
+      name: '/terms',
+      page: () => const TermsPage(),
+    ),
+    GetPage(
+      name: '/data-deletion',
+      page: () => const DataDeletionPage(),
     ),
   ];
 }

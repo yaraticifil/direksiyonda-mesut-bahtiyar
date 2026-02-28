@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_text_field.dart';
+import '../../legal/legal_texts.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -18,6 +19,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
+  bool _kvkkApproved = false;
 
   bool isDriver = true; // true = sürücü, false = yolcu
   int adminTapCount = 0;
@@ -70,6 +72,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (passwordController.text != confirmPasswordController.text) {
       Get.snackbar('Uyarı', 'Şifreler eşleşmiyor');
+      return;
+    }
+
+    if (!_kvkkApproved) {
+      Get.snackbar('Uyarı', 'Lütfen KVKK ve gizlilik onayını işaretleyin.');
       return;
     }
 
@@ -236,9 +243,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Icon(
-                        isDriver ? Icons.shield : Icons.map,
+                        isDriver ? Icons.directions_car : Icons.person_pin_circle,
                         color: const Color(0xFFFFD700),
                         size: 20,
                       ),
@@ -246,8 +254,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Expanded(
                         child: Text(
                           isDriver
-                              ? 'Sigortalı sürücü olarak platforma katıl, hukuki güvence altında çalış.'
-                              : 'Güvenli ve uygun fiyatlı yolculuk için hemen kayıt ol.',
+                              ? LegalTexts.driverRegisterInfo
+                              : 'Bu platform, yolculuk talebinizi dijital ortamda organize etmenize yardımcı olur. '
+                                'Yolculuk fiyatı mesafe ve süre tahminiyle hesaplanır; nihai ücret, gerçekleşen mesafeye göre güncellenebilir.',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[400],
@@ -298,7 +307,55 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   icon: Icons.lock_outline,
                   obscureText: true,
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
+                // KVKK / Gizlilik onayı
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Checkbox(
+                      value: _kvkkApproved,
+                      activeColor: const Color(0xFFFFD700),
+                      onChanged: (v) {
+                        setState(() => _kvkkApproved = v ?? false);
+                      },
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            LegalTexts.consentCheckboxText,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey[400],
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Wrap(
+                            spacing: 12,
+                            runSpacing: 4,
+                            children: [
+                              _linkButton(
+                                label: 'Gizlilik Politikası',
+                                route: '/privacy-policy',
+                              ),
+                              _linkButton(
+                                label: 'Aydınlatma Metni',
+                                route: '/clarification',
+                              ),
+                              _linkButton(
+                                label: 'Kullanım Koşulları',
+                                route: '/terms',
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
                 Obx(() => CustomButton(
                   text: isDriver ? 'SÜRÜCÜ OLARAK KAYIT OL' : 'YOLCU OLARAK KAYIT OL',
                   onPressed: _register,
@@ -334,8 +391,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   child: Text(
                     isDriver
-                        ? '🛡️  Kaydınız, hukuki güvence kapsamında korunur.\nBu platform bir suç örgütü değil, bir emek hareketidir.'
-                        : '🚗  Yolculuklarınız kısa süreli araç kiralama sözleşmesi\nkapsamında hukuki güvence altındadır.',
+                        ? 'Bu platform, bağımsız sürücü ile yolcu arasında dijital aracılık hizmeti sunar.\n'
+                          'Platform, taşımacılık hizmetinin tarafı değildir.'
+                        : LegalTexts.passengerTrustMessage,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 11,
@@ -346,6 +404,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _linkButton({required String label, required String route}) {
+    return InkWell(
+      onTap: () => Get.toNamed(route),
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontSize: 11,
+          color: Color(0xFFFFD700),
+          decoration: TextDecoration.underline,
         ),
       ),
     );

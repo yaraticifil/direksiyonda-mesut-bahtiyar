@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../utils/app_colors.dart';
+import '../../legal/legal_texts.dart';
 
 class AdminAuditScreen extends StatelessWidget {
   const AdminAuditScreen({super.key});
@@ -22,6 +23,16 @@ class AdminAuditScreen extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               itemCount: 15, // Mock data
               itemBuilder: (context, index) => _buildAuditItem(index),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+            child: Text(
+              'Bu ekran, demo amaçlı örnek denetim kayıtları göstermektedir. '
+              'Gerçek sistem logları ve denetim kayıtları, ilgili mevzuat ve şirket politikalarına uygun olarak ayrı sistemlerde tutulmalıdır.\n'
+              '${LegalTexts.tbkGeneralReference}',
+              style: GoogleFonts.publicSans(fontSize: 10, color: AppColors.textDisabled, height: 1.4),
+              textAlign: TextAlign.center,
             ),
           ),
         ],

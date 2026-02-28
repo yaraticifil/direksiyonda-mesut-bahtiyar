@@ -8,6 +8,7 @@ import '../../models/driver_model.dart';
 import '../../models/payout_model.dart';
 import '../../models/ride_model.dart';
 import '../../utils/app_colors.dart';
+import '../../legal/legal_texts.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -107,6 +108,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _sectionHeader('Sistem Özeti', 'Canlı veriler ve performans'),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.cardBg,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AppColors.divider),
+            ),
+            child: Text(
+              LegalTexts.adminDashboardNotice,
+              style: GoogleFonts.publicSans(fontSize: 11, color: AppColors.textSecondary, height: 1.4),
+            ),
+          ),
           const SizedBox(height: 20),
           _buildStatsGrid(),
           const SizedBox(height: 30),

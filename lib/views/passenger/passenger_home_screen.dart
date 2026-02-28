@@ -9,6 +9,7 @@ import '../../controllers/passenger_controller.dart';
 import '../../models/ride_model.dart';
 import '../../services/ride_service.dart';
 import '../../utils/app_colors.dart';
+import '../../legal/legal_texts.dart';
 
 class PassengerHomeScreen extends StatefulWidget {
   const PassengerHomeScreen({super.key});
@@ -155,6 +156,21 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
               if (fb.discount > 0) _fareRow('İndirim', -fb.discount, isDiscount: true),
               const Divider(color: AppColors.divider, height: 24),
               _fareRow('TOPLAM BEDEL', fb.grossTotal, isBold: true, isGold: true),
+              const SizedBox(height: 16),
+              Text(
+                LegalTexts.passengerFareDisclaimer,
+                style: GoogleFonts.publicSans(color: AppColors.textSecondary, fontSize: 11, height: 1.4),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                LegalTexts.passengerTrustMessage,
+                style: GoogleFonts.publicSans(color: AppColors.textSecondary, fontSize: 11, height: 1.4),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                LegalTexts.passengerCancellationPolicy,
+                style: GoogleFonts.publicSans(color: AppColors.textDisabled, fontSize: 10, height: 1.4),
+              ),
               const SizedBox(height: 20),
               Container(
                 padding: const EdgeInsets.all(12),

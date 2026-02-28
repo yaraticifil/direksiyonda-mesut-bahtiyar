@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/driver_controller.dart';
 import '../../models/payout_model.dart';
+import '../../legal/legal_texts.dart';
 import '../payout/payout_request_screen.dart';
 import '../payout/payout_history_screen.dart';
 
@@ -20,10 +21,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   // Motivasyon sözleri
   final List<String> _slogans = [
-    '"Korsan taksi değil, emek taksi!"',
+    '"Korsan değil, emek işi yolculuk."',
     '"Plakam yok belki ama yolum belli."',
-    '"Direksiyon başında, hukuk zemininde."',
-    '"Alın terimize sahip çıkıyoruz."',
+    '"Direksiyon başında, dayanışma zemininde."',
+    '"Alın terimize birlikte sahip çıkıyoruz."',
     '"Biz yedi uyuyanlarız, artık uyandık."',
   ];
 
@@ -214,6 +215,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
               fontSize: 12,
               color: Colors.grey[500],
               fontStyle: FontStyle.italic,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            LegalTexts.driverDashboardDisclaimer,
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.grey[600],
+              height: 1.4,
             ),
           ),
         ],

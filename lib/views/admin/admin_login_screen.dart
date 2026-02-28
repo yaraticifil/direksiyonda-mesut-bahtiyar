@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_text_field.dart';
+import '../../legal/legal_texts.dart';
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
@@ -138,10 +139,10 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'This is a restricted area. Unauthorized access is prohibited.',
+                      LegalTexts.adminLoginNotice,
                       style: TextStyle(
                         color: Colors.red[700],
-                        fontSize: 12,
+                        fontSize: 11,
                       ),
                     ),
                   ),

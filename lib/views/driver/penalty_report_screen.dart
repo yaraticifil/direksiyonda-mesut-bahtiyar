@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../controllers/driver_controller.dart';
+import '../../legal/legal_texts.dart';
 
 class PenaltyReportScreen extends StatefulWidget {
   const PenaltyReportScreen({super.key});
@@ -94,9 +95,9 @@ class _PenaltyReportScreenState extends State<PenaltyReportScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'Korsan yaftası veya haksız ceza durumunda buraya bildirim yapın. Belgeleriniz anında hukuk birimimize iletilir.',
-                  style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black54),
+                Text(
+                  LegalTexts.driverPenaltyIntro,
+                  style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.black87, fontSize: 13),
                 ),
                 const SizedBox(height: 20),
                 GestureDetector(

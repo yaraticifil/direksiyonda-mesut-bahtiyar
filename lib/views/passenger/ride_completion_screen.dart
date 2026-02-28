@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../models/ride_model.dart';
 import '../../services/ride_service.dart';
+import '../../legal/legal_texts.dart';
 
 /// Ekran 2 — Yolculuk Tamamlandı · Ücret Özeti
 /// Yolcu + Sürücü Ortak Görünüm
@@ -64,9 +65,11 @@ class RideCompletionScreen extends StatelessWidget {
             _card([
               _sectionHeader('E-FATURA / E-BELGE'),
               const SizedBox(height: 10),
-              _row('Belge Tipi', 'e-Arşiv Fatura'),
-              _row('Belge No', ride.invoiceNo.isNotEmpty ? ride.invoiceNo : 'Oluşturuluyor...'),
+              _row('Belge Tipi', 'Bilgilendirme Ekranı (Demo)'),
+              _row('Belge No', ride.invoiceNo.isNotEmpty ? ride.invoiceNo : 'DEMO-XXXX'),
               _row('Belge Tarihi', _formatDate(ride.completedAt ?? ride.createdAt)),
+              const SizedBox(height: 8),
+              _row('Not', LegalTexts.passengerInvoiceInfo),
               const SizedBox(height: 12),
               Row(
                 children: [

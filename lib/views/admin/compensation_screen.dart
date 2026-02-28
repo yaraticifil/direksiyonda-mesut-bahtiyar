@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../utils/app_colors.dart';
+import '../../legal/legal_texts.dart';
 
 class CompensationScreen extends StatelessWidget {
   const CompensationScreen({super.key});
@@ -10,7 +11,7 @@ class CompensationScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text('FİNANSAL ANALİZ', style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold)),
+        title: Text('FİNANSAL ANALİZ (DEMO)', style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -27,6 +28,13 @@ class CompensationScreen extends StatelessWidget {
             Text('ÖDEME GEÇMİŞİ', style: GoogleFonts.spaceGrotesk(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primary)),
             const SizedBox(height: 15),
             _buildPayoutList(),
+            const SizedBox(height: 20),
+            Text(
+              'Bu ekran, demo amaçlı örnek finansal veriler içermektedir. '
+              'Gerçek operasyonel raporlar için resmi muhasebe ve raporlama sistemleri esas alınmalıdır.\n'
+              '${LegalTexts.tbkGeneralReference}',
+              style: GoogleFonts.publicSans(fontSize: 11, color: AppColors.textSecondary, height: 1.4),
+            ),
           ],
         ),
       ),

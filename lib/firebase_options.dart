@@ -29,7 +29,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAmbCdXX2jKx7QpflPklMjfqwDbToryEFc',
+    apiKey: 'AIzaSyBYArx0gnG2cJLGqCo5jNd4b-22GObygQo',
     appId: '1:772761045864:web:081776d56a2b76bf1bc88576806e7090',
     messagingSenderId: '772761045864',
     projectId: 'ortak-yol-driver',
@@ -46,29 +46,29 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
-    appId: '1:123456789012:ios:abcdef1234567890',
-    messagingSenderId: '123456789012',
-    projectId: 'driver-app-12345',
-    storageBucket: 'driver-app-12345.appspot.com',
-    iosBundleId: 'com.example.driverApp',
+    apiKey: 'AIzaSyAg7U5n94vq0lXBh-d-_iIofq_VuScKfX0',
+    appId: '1:772761045864:ios:8f50ea6a52e7bf8ab0a4dd',
+    messagingSenderId: '772761045864',
+    projectId: 'ortak-yol-driver',
+    storageBucket: 'ortak-yol-driver.firebasestorage.app',
+    iosBundleId: 'com.ortakyol.driver',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
-    appId: '1:123456789012:macos:abcdef1234567890',
-    messagingSenderId: '123456789012',
-    projectId: 'driver-app-12345',
-    storageBucket: 'driver-app-12345.appspot.com',
-    iosBundleId: 'com.example.driverApp',
+    apiKey: 'AIzaSyAg7U5n94vq0lXBh-d-_iIofq_VuScKfX0',
+    appId: '1:772761045864:ios:8f50ea6a52e7bf8ab0a4dd',
+    messagingSenderId: '772761045864',
+    projectId: 'ortak-yol-driver',
+    storageBucket: 'ortak-yol-driver.firebasestorage.app',
+    iosBundleId: 'com.ortakyol.driver',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
-    appId: '1:123456789012:windows:abcdef1234567890',
-    messagingSenderId: '123456789012',
-    projectId: 'driver-app-12345',
-    authDomain: 'driver-app-12345.firebaseapp.com',
-    storageBucket: 'driver-app-12345.appspot.com',
+    apiKey: 'AIzaSyAg7U5n94vq0lXBh-d-_iIofq_VuScKfX0',
+    appId: '1:772761045864:web:081776d56a2b76bf1bc88576806e7090',
+    messagingSenderId: '772761045864',
+    projectId: 'ortak-yol-driver',
+    authDomain: 'ortak-yol-driver.firebaseapp.com',
+    storageBucket: 'ortak-yol-driver.firebasestorage.app',
   );
 }
