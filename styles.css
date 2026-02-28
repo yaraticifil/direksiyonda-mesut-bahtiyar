@@ -239,6 +239,36 @@ body {
 }
 
 /* Modal Stilleri (Sesli Asistan İçin) */
+
+/* Sürücü Kartı Stilleri */
+.driver-card-container {
+    margin-top: 60px;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+}
+.driver-card-container h2 {
+    margin-bottom: 20px;
+    color: #2c3e50;
+    font-size: 1.5rem;
+}
+
+.driver-card .flip-card-inner {
+    height: 400px;
+}
+
+.driver-card .flip-card-front,
+.driver-card .flip-card-back {
+    padding: 20px 30px;
+}
+
+.driver-card .driver-photo {
+    background-image: url('https://via.placeholder.com/120');
+    background-size: cover;
+    background-position: center;
+}
+
+/* rest of modal rules continue */
 .modal {
     display: none; /* Gizli başlar */
     position: fixed;

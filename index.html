@@ -94,6 +94,40 @@
         </div>
     </div>
     
+    <!-- Dijital Şoför Kartı -->
+    <div class="driver-card-container">
+        <h2>Dijital Şoför Kartı</h2>
+        <div class="card-container driver-card">
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <!-- FRONT -->
+                    <div class="flip-card-front">
+                        <div class="card-header">
+                            <h2>ŞOFÖR KİMLİK (ÖN)</h2>
+                        </div>
+                        <div class="driver-photo" style="margin:0 auto 15px; width:120px; height:120px; background:#fff; border-radius:50%;"></div>
+                        <p><strong>Adı:</strong> [Ad Soyad]</p>
+                        <p><strong>TC Kimlik No:</strong> 12345678901</p>
+                        <p><strong>Sürücü Belge No:</strong> 98-765432</p>
+                        <p><strong>Geçerlilik:</strong> 01/2026</p>
+                        <div class="flip-instruction" style="margin-top:auto;">Kartı çevir ↻</div>
+                    </div>
+                    <!-- BACK -->
+                    <div class="flip-card-back">
+                        <div class="card-header back-header">
+                            <h2>ŞOFÖR KİMLİK (ARKA)</h2>
+                        </div>
+                        <p><strong>Doğum Tarihi:</strong> 01.01.1990</p>
+                        <p><strong>Adres:</strong> Örnek Mah. Sok. No:5</p>
+                        <p><strong>Veriliş Tarihi:</strong> 01/01/2021</p>
+                        <p><strong>Notlar:</strong> İki taraflı dijital kart</p>
+                        <div class="flip-instruction" style="margin-top:auto;">Ön yüz için dokunun ↻</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Sesli Savunma Asistanı Modal -->
     <div id="voiceAssistantModal" class="modal">
         <div class="modal-content">
@@ -112,6 +146,11 @@
     
     <script>
         document.querySelector('.flip-card').addEventListener('click', function() {
+            this.classList.toggle('flipped');
+        });
+        
+        // yeni sürücü kartı için dinleyici
+        document.querySelector('.driver-card .flip-card').addEventListener('click', function() {
             this.classList.toggle('flipped');
         });
         
