@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'firebase_options.dart';
 import 'routes/app_pages.dart';
 import 'controllers/auth_controller.dart';
@@ -11,11 +11,8 @@ import 'utils/app_colors.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Supabase Initialization
-  await Supabase.initialize(
-    url: 'https://icqwnyylxymnihetkbxi.supabase.co',
-    anonKey: 'sb_publishable_HxOjYrr12YbYUKEd3EmkEg_n6Srx3ix',
-  );
+  // Load Environment Variables
+  await dotenv.load(fileName: ".env");
 
   try {
     await Firebase.initializeApp(

@@ -127,6 +127,8 @@ class PassengerController extends GetxController {
         'commission': fb.commission,
         'driverNet': fb.driverNet,
         'marketRate': fb.marketRate,
+        'legalBasis': '6098 sayılı TBK m.299',
+        'contractType': 'Şoförlü Araç Kiralama Sözleşmesi',
         'createdAt': FieldValue.serverTimestamp(),
       });
 

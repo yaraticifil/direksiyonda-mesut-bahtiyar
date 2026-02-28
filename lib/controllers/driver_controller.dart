@@ -142,7 +142,14 @@ class DriverController extends GetxController {
   /// Yolcuya vardım
   Future<void> arrivedAtPickup() async {
     if (currentRide.value == null) return;
-    // Durumu güncellemiyoruz ama UI'da gösteriyoruz
+    try {
+      await _firestore.collection('rides').doc(currentRide.value!.id).update({
+        'status': 'driver_arrived',
+      });
+      Get.snackbar("Konumdasınız", "Yolcuya ulaştınız. Lütfen bekleyin.");
+    } catch (e) {
+      debugPrint("Arrived hatası: $e");
+    }
   }
 
   /// Yolculuğu başlat

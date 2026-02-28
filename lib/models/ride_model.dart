@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../services/ride_service.dart';
+import '../models/vehicle_segment.dart';
 
 enum RideStatus {
   searching,
@@ -27,6 +27,8 @@ class Ride {
   final double distanceKm;
   final int estimatedMinutes;
   final String invoiceNo;
+  final String legalBasis;
+  final String contractType;
 
   // Ücret kırılımı
   final double openingFee;
@@ -70,6 +72,8 @@ class Ride {
     this.driverNet = 0,
     this.marketRate = 1.0,
     required this.createdAt,
+    this.legalBasis = '6098 sayılı TBK m.299',
+    this.contractType = 'Araç Kiralama Sözleşmesi',
     this.startedAt,
     this.completedAt,
   });
@@ -103,6 +107,8 @@ class Ride {
       driverNet: (data['driverNet'] ?? 0).toDouble(),
       marketRate: (data['marketRate'] ?? 1.0).toDouble(),
       createdAt: _parseDate(data['createdAt']),
+      legalBasis: data['legalBasis'] ?? '6098 sayılı TBK m.299',
+      contractType: data['contractType'] ?? 'Araç Kiralama Sözleşmesi',
       startedAt: data['startedAt'] != null ? _parseDate(data['startedAt']) : null,
       completedAt: data['completedAt'] != null ? _parseDate(data['completedAt']) : null,
     );
@@ -173,6 +179,8 @@ class Ride {
       'driverNet': driverNet,
       'marketRate': marketRate,
       'createdAt': FieldValue.serverTimestamp(),
+      'legalBasis': legalBasis,
+      'contractType': contractType,
       'startedAt': startedAt?.toIso8601String(),
       'completedAt': completedAt?.toIso8601String(),
     };

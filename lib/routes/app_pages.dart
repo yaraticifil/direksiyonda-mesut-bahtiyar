@@ -16,6 +16,7 @@ import '../views/driver/legal_contract_screen.dart';
 import '../views/driver/penalty_report_screen.dart';
 import '../views/passenger/passenger_home_screen.dart';
 import '../views/passenger/ride_history_screen.dart';
+import '../views/passenger/passenger_legal_passport.dart';
 import '../views/driver/fair_earnings_screen.dart';
 import '../views/admin/compensation_screen.dart';
 import '../views/driver/ride_detail_screen.dart';
@@ -26,6 +27,7 @@ import '../legal/privacy_policy_page.dart';
 import '../legal/clarification_page.dart';
 import '../legal/terms_page.dart';
 import '../legal/data_deletion_page.dart';
+import '../middlewares/auth_middleware.dart';
 
 class AppPages {
   static const initial = '/';
@@ -40,16 +42,19 @@ class AppPages {
       name: '/trip-management',
       page: () => const TripManagementScreen(),
       binding: DriverBinding(),
+      middlewares: [DriverAuthMiddleware()],
     ),
     GetPage(
       name: '/compensation',
       page: () => const CompensationScreen(),
       binding: AdminBinding(),
+      middlewares: [AdminAuthMiddleware()],
     ),
     GetPage(
       name: '/admin-audit',
       page: () => const AdminAuditScreen(),
       binding: AdminBinding(),
+      middlewares: [AdminAuthMiddleware()],
     ),
     GetPage(
       name: '/role-selection',
@@ -60,6 +65,7 @@ class AppPages {
       name: '/driver-kyc',
       page: () => const DriverKycScreen(),
       binding: DriverBinding(),
+      middlewares: [DriverAuthMiddleware()],
     ),
     GetPage(
       name: '/register',
@@ -75,11 +81,13 @@ class AppPages {
       name: '/waiting',
       page: () => const WaitingScreen(),
       binding: DriverBinding(),
+      middlewares: [DriverAuthMiddleware()],
     ),
     GetPage(
       name: '/dashboard',
       page: () => const DashboardScreen(),
       binding: DriverBinding(),
+      middlewares: [DriverAuthMiddleware()],
     ),
     GetPage(
       name: '/admin-login',
@@ -90,43 +98,57 @@ class AppPages {
       name: '/admin-dashboard',
       page: () => const AdminDashboardScreen(),
       binding: AdminBinding(),
+      middlewares: [AdminAuthMiddleware()],
     ),
     GetPage(
       name: '/digital-id',
       page: () => const DigitalIdScreen(),
       binding: DriverBinding(),
+      middlewares: [DriverAuthMiddleware()],
     ),
     GetPage(
       name: '/legal-contract',
       page: () => const LegalContractScreen(),
       binding: DriverBinding(),
+      middlewares: [DriverAuthMiddleware()],
     ),
     GetPage(
       name: '/report-penalty',
       page: () => const PenaltyReportScreen(),
       binding: DriverBinding(),
+      middlewares: [DriverAuthMiddleware()],
     ),
     // ─── YOLCU EKRANLARI ───
     GetPage(
       name: '/passenger-home',
       page: () => const PassengerHomeScreen(),
       binding: PassengerBinding(),
+      middlewares: [PassengerAuthMiddleware()],
     ),
     GetPage(
       name: '/ride-history',
       page: () => const RideHistoryScreen(),
       binding: PassengerBinding(),
+      middlewares: [PassengerAuthMiddleware()],
+    ),
+    GetPage(
+      name: '/passenger-legal-passport',
+      page: () => const PassengerLegalPassport(),
+      binding: PassengerBinding(),
+      middlewares: [PassengerAuthMiddleware()],
     ),
     // ─── SÜRÜCÜ ADİL KAZANÇ ───
     GetPage(
       name: '/fair-earnings',
       page: () => const FairEarningsScreen(),
       binding: DriverBinding(),
+      middlewares: [DriverAuthMiddleware()],
     ),
     GetPage(
       name: '/ride-detail',
       page: () => const RideDetailScreen(),
       binding: DriverBinding(),
+      middlewares: [DriverAuthMiddleware()],
     ),
     // ─── HUKUKİ / BİLGİLENDİRME SAYFALARI ───
     GetPage(

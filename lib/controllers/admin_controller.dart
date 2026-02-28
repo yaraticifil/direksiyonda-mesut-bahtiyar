@@ -11,7 +11,9 @@ class AdminController extends GetxController {
   final RxList<Payout> payouts = <Payout>[].obs;
   final RxList<Ride> rides = <Ride>[].obs;
   final RxList<Map<String, dynamic>> penalties = <Map<String, dynamic>>[].obs;
-  final RxBool isLoading = false.obs;
+  final RxBool isDriversLoading = false.obs;
+  final RxBool isPayoutsLoading = false.obs;
+  final RxBool isRidesLoading = false.obs;
   final RxString selectedStatus = 'all'.obs;
 
   @override
@@ -25,7 +27,7 @@ class AdminController extends GetxController {
 
   Future<void> fetchDrivers() async {
     try {
-      isLoading.value = true;
+      isDriversLoading.value = true;
       QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
           .collection('drivers')
           .orderBy('createdAt', descending: true)
@@ -37,13 +39,13 @@ class AdminController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', 'Failed to fetch drivers');
     } finally {
-      isLoading.value = false;
+      isDriversLoading.value = false;
     }
   }
 
   Future<void> fetchPayouts() async {
     try {
-      isLoading.value = true;
+      isPayoutsLoading.value = true;
       QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
           .collection('payouts')
           .orderBy('createdAt', descending: true)
@@ -55,13 +57,13 @@ class AdminController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', 'Failed to fetch payouts');
     } finally {
-      isLoading.value = false;
+      isPayoutsLoading.value = false;
     }
   }
 
   Future<void> updateDriverStatus(String driverId, DriverStatus status) async {
     try {
-      isLoading.value = true;
+      isDriversLoading.value = true;
       
       await _firestore.collection('drivers').doc(driverId).update({
         'status': status.toString().split('.').last,
@@ -73,13 +75,13 @@ class AdminController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', 'Failed to update driver status');
     } finally {
-      isLoading.value = false;
+      isDriversLoading.value = false;
     }
   }
 
   Future<void> updatePayoutStatus(String payoutId, PayoutStatus status) async {
     try {
-      isLoading.value = true;
+      isPayoutsLoading.value = true;
       
       Map<String, dynamic> updateData = {
         'status': status.toString().split('.').last,
@@ -97,7 +99,7 @@ class AdminController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', 'Failed to update payout status');
     } finally {
-      isLoading.value = false;
+      isPayoutsLoading.value = false;
     }
   }
 
@@ -136,7 +138,8 @@ class AdminController extends GetxController {
         return data;
       }).toList();
     } catch (e) {
-      // Collection might not exist yet
+      Get.snackbar('Hata', 'Ceza kayıtları yüklenemedi: $e');
+      print('fetchPenalties hatası: $e');
     }
   }
 
@@ -146,7 +149,7 @@ class AdminController extends GetxController {
 
   Future<void> fetchRides() async {
     try {
-      isLoading.value = true;
+      isRidesLoading.value = true;
       QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
           .collection('rides')
           .orderBy('createdAt', descending: true)
@@ -159,7 +162,7 @@ class AdminController extends GetxController {
     } catch (e) {
       Get.snackbar('Hata', 'Yolculuklar yüklenemedi');
     } finally {
-      isLoading.value = false;
+      isRidesLoading.value = false;
     }
   }
 

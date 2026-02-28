@@ -331,6 +331,8 @@ class _PassengerHomeScreenState extends State<PassengerHomeScreen> {
         ),
         Row(
           children: [
+            _topBtn(Icons.gavel_rounded, () => Get.toNamed('/passenger-legal-passport')),
+            const SizedBox(width: 10),
             _topBtn(Icons.history_rounded, () => Get.toNamed('/ride-history')),
             const SizedBox(width: 10),
             _topBtn(Icons.sos_rounded, () => authController.launchEmergencySupport()),

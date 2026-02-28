@@ -15,7 +15,9 @@ class AuthController extends GetxController {
   final Rx<Driver?> _driver = Rx<Driver?>(null);
   final Rx<Passenger?> _passenger = Rx<Passenger?>(null);
   final RxBool isLoading = false.obs;
-  final RxString userRole = ''.obs; // 'driver', 'passenger', 'admin'
+  final RxString userRole = ''.obs; // 'driver', 'passenger', 'admin', 'unknown'
+
+  static const String supportPhoneNumber = '+905407254626';
 
   User? get user => _user.value;
   Driver? get driver => _driver.value;
@@ -31,6 +33,9 @@ class AuthController extends GetxController {
   void _handleAuthChange(User? user) async {
     if (user != null) {
       await _detectUserRole(user.uid);
+      if (userRole.value == 'unknown') {
+        Get.offAllNamed('/role-selection');
+      }
     } else {
       _driver.value = null;
       _passenger.value = null;
@@ -57,7 +62,15 @@ class AuthController extends GetxController {
         return;
       }
 
+      // Son olarak admins koleksiyonuna bak (Gerçek Yetki Kontrolü)
+      final adminDoc = await _firestore.collection('admins').doc(uid).get();
+      if (adminDoc.exists) {
+        userRole.value = 'admin';
+        return;
+      }
+
       debugPrint("Kullanıcı rolü bulunamadı: $uid");
+      userRole.value = 'unknown';
     } catch (e) {
       debugPrint("Rol tespit hatası: $e");
     }
@@ -186,6 +199,9 @@ class AuthController extends GetxController {
       case 'passenger':
         Get.offAllNamed('/passenger-home');
         break;
+      case 'admin':
+        Get.offAllNamed('/admin-dashboard');
+        break;
       default:
         Get.offAllNamed('/login');
         break;
@@ -194,13 +210,13 @@ class AuthController extends GetxController {
 
   /// Acil destek — WhatsApp, arama ve SMS
   Future<void> launchEmergencySupport() async {
-    final Uri whatsappUrl = Uri.parse("https://wa.me/905407254626?text=ACIL%20YARDIM!%20Hukuki%20destek%20istiyorum.");
+    final Uri whatsappUrl = Uri.parse("https://wa.me/${supportPhoneNumber.replaceAll('+', '')}?text=ACIL%20YARDIM!%20Hukuki%20destek%20istiyorum.");
     try {
       if (await canLaunchUrl(whatsappUrl)) {
         await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
       } else {
         // WhatsApp yoksa doğrudan ara
-        final Uri phoneUrl = Uri.parse("tel:+905407254626");
+        final Uri phoneUrl = Uri.parse("tel:$supportPhoneNumber");
         if (await canLaunchUrl(phoneUrl)) {
           await launchUrl(phoneUrl);
         } else {
@@ -214,7 +230,7 @@ class AuthController extends GetxController {
 
   /// Doğrudan arama
   Future<void> callEmergency() async {
-    final Uri phoneUrl = Uri.parse("tel:+905407254626");
+    final Uri phoneUrl = Uri.parse("tel:$supportPhoneNumber");
     try {
       if (await canLaunchUrl(phoneUrl)) {
         await launchUrl(phoneUrl);

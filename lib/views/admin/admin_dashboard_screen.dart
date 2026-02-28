@@ -30,7 +30,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
   }
 
   void _checkAdminAccess() {
-    if (authController.user?.email != 'gumussalimm@gmail.com') {
+    if (authController.userRole.value != 'admin') {
       Get.snackbar(
         'Erişim Reddedildi',
         'Bu sayfaya erişim yetkiniz bulunmamaktadır.',

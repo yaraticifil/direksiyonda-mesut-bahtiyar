@@ -21,11 +21,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   // Motivasyon sözleri
   final List<String> _slogans = [
-    '"Korsan değil, emek işi yolculuk."',
-    '"Plakam yok belki ama yolum belli."',
-    '"Direksiyon başında, dayanışma zemininde."',
-    '"Alın terimize birlikte sahip çıkıyoruz."',
-    '"Biz yedi uyuyanlarız, artık uyandık."',
+    '"Net kazancın cebinde, direksiyon senin elinde."',
+    '"Adil komisyon, şeffaf kazanç."',
+    '"Bugün hedeflerine bir adım daha yakınsın."',
+    '"Çevrimiçi ol, kazanmaya başla."',
+    '"Emeğinin tam karşılığını aldığın yerdesin."',
   ];
 
   late String _currentSlogan;
@@ -395,9 +395,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             Expanded(
               child: _buildActionButton(
-                'DİJİTAL\nKİMLİK',
-                Icons.qr_code,
-                Colors.blue,
+                'HUKUKİ\nKART',
+                Icons.admin_panel_settings,
+                Colors.blueAccent,
                 () => Get.toNamed('/digital-id'),
               ),
             ),
