@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart' as firebase_core;
 import 'package:get/get.dart';
 import 'firebase_options.dart';
 import 'routes/app_pages.dart';
@@ -11,7 +11,7 @@ void main() async {
     // Firebase'in zaten başlatılmış olma ihtimalini kontrol et
     // (Android'de google-services.json varsa otomatik başlatılır)
     try {
-      await Firebase.initializeApp(
+      await firebase_core.Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
     } catch (e) {
