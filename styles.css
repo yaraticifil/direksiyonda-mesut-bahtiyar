@@ -1,0 +1,376 @@
+/* Temel CSS Kuralları */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f4f6f9;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #2c3e50;
+}
+
+/* 3D Flip Kart Konteyneri */
+.card-container {
+    perspective: 1000px;
+    width: 100%;
+    max-width: 400px;
+    height: 600px; /* Kart Yüksekliği */
+}
+
+.flip-card {
+    background-color: transparent;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+    box-shadow: 0 10px 20px rgb(0 0 0 / 19%), 0 6px 6px rgb(0 0 0 / 23%);
+    border-radius: 15px;
+}
+
+/* Kartın döndürülmesi tetiklendiğinde */
+.flip-card.flipped .flip-card-inner {
+    transform: rotateY(180deg);
+}
+
+/* Ön ve Arka Yüz Genel Ayarları */
+.flip-card-front, .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    overflow-y: auto; /* İçerik taşarsa kaydırma çubuğu */
+}
+
+/* Ön Yüz Stilleri */
+.flip-card-front {
+    background: linear-gradient(135deg, #1abc9c, #16a085);
+    color: white;
+}
+
+/* Arka Yüz Stilleri */
+.flip-card-back {
+    background: linear-gradient(135deg, #34495e, #2c3e50);
+    color: #ecf0f1;
+    transform: rotateY(180deg);
+}
+
+/* Ortak Kart Bileşenleri */
+.card-header {
+    border-bottom: 2px solid rgb(255 255 255 / 30%);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.card-header h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.back-header {
+    border-bottom-color: rgb(236 240 241 / 30%);
+}
+
+.back-header h2 {
+    color: #e74c3c; /* Daha uyarıcı bir renk */
+}
+
+/* Ön Yüz Özel Bileşenleri */
+.qr-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.qr-placeholder {
+    width: 150px;
+    height: 150px;
+    background-color: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    font-size: 0.8rem;
+    padding: 10px;
+    border: 3px solid #f1c40f;
+}
+
+.declaration-section {
+    background-color: rgb(0 0 0 / 10%);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-style: italic;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.emergency-line {
+    background-color: #c0392b;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.emergency-text {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.emergency-subtext {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.avukat-buton {
+    background-color: #f39c12;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: auto;
+    margin-bottom: 10px;
+}
+
+.avukat-buton:hover {
+    background-color: #d68910;
+}
+
+/* Arka Yüz Özel Bileşenleri */
+.legal-references {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.reference-item {
+    background-color: rgb(255 255 255 / 5%);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border-left: 4px solid #3498db;
+}
+
+.reference-item h3 {
+    font-size: 0.95rem;
+    margin-bottom: 5px;
+    color: #3498db;
+}
+
+.reference-item p {
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.protocol-section {
+    background-color: rgb(231 76 60 / 10%);
+    padding: 15px;
+    border-radius: 8px;
+    text-align: left;
+    border: 1px solid rgb(231 76 60 / 30%);
+    margin-top: auto;
+    margin-bottom: 10px;
+}
+
+.protocol-section h3 {
+    font-size: 1rem;
+    color: #e74c3c;
+    margin-bottom: 10px;
+}
+
+.protocol-section ol {
+    padding-left: 20px;
+    font-size: 0.85rem;
+}
+
+.protocol-section li {
+    margin-bottom: 8px;
+}
+
+.protocol-section strong {
+    color: #f1c40f;
+}
+
+/* Flip Talimatı */
+.flip-instruction {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    margin-top: auto;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Modal Stilleri (Sesli Asistan İçin) */
+.modal {
+    display: none; /* Gizli başlar */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(0 0 0 / 80%);
+}
+
+.modal-content {
+    background-color: #2c3e50;
+    margin: 30% auto; /* Ortala */
+    padding: 30px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 350px;
+    border-radius: 20px;
+    text-align: center;
+    color: white;
+    position: relative;
+    box-shadow: 0 4px 15px rgb(0 0 0 / 50%);
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.voice-assistant-ui {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pulsing-mic {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    animation: mic-pulse 1.5s infinite;
+    background-color: rgb(231 76 60 / 20%);
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@keyframes mic-pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgb(231 76 60 / 70%);
+    }
+
+    70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 15px rgb(231 76 60 / 0%);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgb(231 76 60 / 0%);
+    }
+}
+
+.voice-assistant-ui h3 {
+    margin-bottom: 15px;
+    color: #e74c3c;
+}
+
+.whisper-text {
+    font-style: italic;
+    color: #bdc3c7;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    color: #f39c12;
+}
+
+.status-indicator .dot {
+    height: 10px;
+    width: 10px;
+    background-color: #f39c12;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 10px;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* Scrollbar ayarları (İçerik taşarsa güzel görünmesi için) */
+.flip-card-front::-webkit-scrollbar,
+.flip-card-back::-webkit-scrollbar {
+    width: 6px;
+}
+
+.flip-card-front::-webkit-scrollbar-track,
+.flip-card-back::-webkit-scrollbar-track {
+    background: rgb(255 255 255 / 10%); 
+    border-radius: 10px;
+}
+
+.flip-card-front::-webkit-scrollbar-thumb,
+.flip-card-back::-webkit-scrollbar-thumb {
+    background: rgb(255 255 255 / 30%); 
+    border-radius: 10px;
+}
+
+.flip-card-front::-webkit-scrollbar-thumb:hover,
+.flip-card-back::-webkit-scrollbar-thumb:hover {
+    background: rgb(255 255 255 / 50%); 
+}
