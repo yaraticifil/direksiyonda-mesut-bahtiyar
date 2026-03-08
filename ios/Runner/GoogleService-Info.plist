@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyAg7U5n94vq0lXBh-d-_iIofq_VuScKfX0</string>
+	<key>GCM_SENDER_ID</key>
+	<string>772761045864</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.ortakyol.driver</string>
+	<key>PROJECT_ID</key>
+	<string>ortak-yol-driver</string>
+	<key>STORAGE_BUCKET</key>
+	<string>ortak-yol-driver.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:772761045864:ios:8f50ea6a52e7bf8ab0a4dd</string>
+</dict>
+</plist>
