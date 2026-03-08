@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hukuki Kalkan - Admin Paneli</title>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+  :root {
+    --bg: #0f1117; --card: #1a1d27; --card2: #22263a;
+    --green: #00e396; --red: #ff4560; --blue: #008ffb;
+    --orange: #feb019; --text: #e2e8f0; --muted: #8892a4;
+    --border: #2d3347;
+  }
+  body { background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* LAYOUT */
+  .layout { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 220px; background: var(--card); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0;
+  }
+  .main { flex: 1; overflow-y: auto; }
+
+  /* SIDEBAR */
+  .logo { padding: 0 20px 24px; border-bottom: 1px solid var(--border); }
+  .logo h1 { font-size: 1.1rem; color: var(--green); letter-spacing: 1px; }
+  .logo span { font-size: 0.7rem; color: var(--muted); }
+  .nav { padding: 16px 0; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 20px; cursor: pointer; font-size: 0.875rem;
+    color: var(--muted); transition: all 0.2s; border-left: 3px solid transparent;
+  }
+  .nav-item:hover, .nav-item.active {
+    color: var(--text); background: var(--card2); border-left-color: var(--green);
+  }
+  .nav-item .icon { font-size: 1rem; width: 20px; text-align: center; }
+  .badge {
+    margin-left: auto; background: var(--red); color: white;
+    font-size: 0.65rem; padding: 2px 6px; border-radius: 10px; font-weight: bold;
+  }
+  .sidebar-footer { margin-top: auto; padding: 16px 20px; border-top: 1px solid var(--border); }
+  .user-info { display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; }
+  .user-info .name { font-size: 0.8rem; }
+  .user-info .role { font-size: 0.7rem; color: var(--muted); }
+
+  /* TOPBAR */
+  .topbar {
+    padding: 16px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--card); position: sticky; top: 0; z-index: 10;
+  }
+  .topbar h2 { font-size: 1.1rem; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .btn {
+    padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer;
+    font-size: 0.8rem; font-weight: 600; transition: opacity 0.2s;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn-green { background: var(--green); color: #000; }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .notif-bell {
+    width: 36px; height: 36px; background: var(--card2); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    position: relative; font-size: 1rem;
+  }
+  .notif-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: var(--red); border-radius: 50%; }
+
+  /* CONTENT */
+  .content { padding: 24px; }
+
+  /* KPI CARDS */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .kpi-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px; position: relative; overflow: hidden;
+  }
+  .kpi-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .kpi-card.green::before { background: var(--green); }
+  .kpi-card.red::before { background: var(--red); }
+  .kpi-card.blue::before { background: var(--blue); }
+  .kpi-card.orange::before { background: var(--orange); }
+  .kpi-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  .kpi-value { font-size: 2rem; font-weight: 700; margin-bottom: 4px; }
+  .kpi-value.green { color: var(--green); }
+  .kpi-value.red { color: var(--red); }
+  .kpi-value.blue { color: var(--blue); }
+  .kpi-value.orange { color: var(--orange); }
+  .kpi-sub { font-size: 0.75rem; color: var(--muted); }
+  .kpi-icon { position: absolute; right: 16px; top: 16px; font-size: 1.8rem; opacity: 0.15; }
+  .trend { font-size: 0.75rem; margin-top: 4px; }
+  .trend.up { color: var(--green); }
+  .trend.down { color: var(--red); }
+
+  /* GRID 2 COL */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .grid-3-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 24px; }
+
+  /* CARDS */
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-header h3 { font-size: 0.9rem; font-weight: 600; }
+  .card-body { padding: 20px; }
+
+  /* STATUS BADGES */
+  .status {
+    padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600;
+    display: inline-block;
+  }
+  .status.pending { background: rgba(254,176,25,0.15); color: var(--orange); }
+  .status.review { background: rgba(0,143,251,0.15); color: var(--blue); }
+  .status.resolved { background: rgba(0,227,150,0.15); color: var(--green); }
+  .status.urgent { background: rgba(255,69,96,0.15); color: var(--red); }
+
+  /* PETITIONS TABLE */
+  .petition-table { width: 100%; border-collapse: collapse; }
+  .petition-table th {
+    text-align: left; font-size: 0.7rem; color: var(--muted);
+    padding: 8px 12px; text-transform: uppercase; letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  .petition-table td { padding: 12px; font-size: 0.8rem; border-bottom: 1px solid rgba(45,51,71,0.5); }
+  .petition-table tr:last-child td { border-bottom: none; }
+  .petition-table tr:hover td { background: var(--card2); cursor: pointer; }
+  .driver-info { display: flex; align-items: center; gap: 8px; }
+  .driver-avatar {
+    width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--green));
+    display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: bold; flex-shrink: 0;
+  }
+  .driver-name { font-weight: 500; }
+  .driver-plate { font-size: 0.7rem; color: var(--muted); }
+  .action-btn {
+    padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; cursor: pointer;
+    border: 1px solid var(--border); background: var(--card2); color: var(--text);
+    transition: all 0.2s;
+  }
+  .action-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .action-btn.pdf { border-color: var(--orange); color: var(--orange); }
+
+  /* MINI CHART (Fake bars) */
+  .bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 100px; padding: 0 4px; }
+  .bar-col { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; justify-content: flex-end; gap: 4px; }
+  .bar {
+    width: 100%; border-radius: 4px 4px 0 0; transition: all 0.3s;
+    cursor: pointer; position: relative;
+  }
+  .bar:hover { opacity: 0.8; }
+  .bar-label { font-size: 0.6rem; color: var(--muted); white-space: nowrap; }
+  .chart-legend { display: flex; gap: 12px; margin-top: 12px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.7rem; color: var(--muted); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* DONUT (Fake) */
+  .donut-wrap { display: flex; align-items: center; justify-content: center; gap: 24px; padding: 8px 0; }
+  .donut {
+    width: 100px; height: 100px; border-radius: 50%;
+    background: conic-gradient(
+      var(--green) 0deg 130deg,
+      var(--blue) 130deg 220deg,
+      var(--orange) 220deg 280deg,
+      var(--red) 280deg 360deg
+    );
+    position: relative; flex-shrink: 0;
+  }
+  .donut::after {
+    content: ''; position: absolute; inset: 22px;
+    background: var(--card); border-radius: 50%;
+  }
+  .donut-labels { display: flex; flex-direction: column; gap: 8px; }
+  .donut-item { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; }
+  .donut-item .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .donut-item .pct { margin-left: auto; font-weight: 600; color: var(--text); min-width: 30px; text-align: right; }
+
+  /* ACTIVITY FEED */
+  .feed { display: flex; flex-direction: column; gap: 0; }
+  .feed-item {
+    display: flex; gap: 12px; padding: 12px 0;
+    border-bottom: 1px solid rgba(45,51,71,0.5); align-items: flex-start;
+  }
+  .feed-item:last-child { border-bottom: none; }
+  .feed-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+  .feed-icon.red { background: rgba(255,69,96,0.15); }
+  .feed-icon.green { background: rgba(0,227,150,0.15); }
+  .feed-icon.blue { background: rgba(0,143,251,0.15); }
+  .feed-icon.orange { background: rgba(254,176,25,0.15); }
+  .feed-text { font-size: 0.8rem; line-height: 1.4; }
+  .feed-time { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+
+  /* LIVE INDICATOR */
+  .live-badge {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.7rem; color: var(--green); font-weight: 600;
+  }
+  .live-dot {
+    width: 7px; height: 7px; background: var(--green);
+    border-radius: 50%; animation: blink 1.2s infinite;
+  }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+  /* SEARCH */
+  .search-bar {
+    background: var(--card2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 14px; color: var(--text); font-size: 0.8rem; width: 220px; outline: none;
+  }
+  .search-bar::placeholder { color: var(--muted); }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .kpi-grid { grid-template-columns: repeat(2,1fr); }
+    .grid-2, .grid-3-1 { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+  }
+  @media (max-width: 500px) {
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 28px; width: 420px; max-width: 95vw; position: relative;
+  }
+  .modal-box h3 { margin-bottom: 16px; font-size: 1rem; }
+  .modal-close { position: absolute; top: 16px; right: 16px; cursor: pointer; color: var(--muted); font-size: 1.2rem; }
+  .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.82rem; }
+  .detail-row:last-of-type { border-bottom: none; }
+  .detail-label { color: var(--muted); }
+  .detail-value { font-weight: 500; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">
+      <h1>⚖️ HUKUKİ KALKAN</h1>
+      <span>Admin Paneli v2.1</span>
+    </div>
+    <nav class="nav">
+      <div class="nav-item active"><span class="icon">📊</span> Dashboard</div>
+      <div class="nav-item"><span class="icon">📄</span> Dilekçeler <span class="badge">7</span></div>
+      <div class="nav-item"><span class="icon">🚗</span> Sürücüler</div>
+      <div class="nav-item"><span class="icon">⚖️</span> Davalar</div>
+      <div class="nav-item"><span class="icon">📞</span> Avukatlar</div>
+      <div class="nav-item"><span class="icon">📈</span> Raporlar</div>
+      <div class="nav-item"><span class="icon">🔔</span> Bildirimler <span class="badge">3</span></div>
+      <div class="nav-item"><span class="icon">⚙️</span> Ayarlar</div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="avatar">AY</div>
+        <div>
+          <div class="name">Av. Ayşe Yılmaz</div>
+          <div class="role">Baş Hukuk Danışmanı</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div>
+        <h2>Dashboard</h2>
+        <div class="live-badge" style="margin-top:4px">
+          <div class="live-dot"></div>
+          Canlı Veri · Son güncelleme: 14:32
+        </div>
+      </div>
+      <div class="topbar-right">
+        <input class="search-bar" type="text" placeholder="🔍 Sürücü, plaka, sözleşme ara...">
+        <div class="notif-bell">🔔<div class="notif-dot"></div></div>
+        <button class="btn btn-green">+ Yeni Dava</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- KPI CARDS -->
+      <div class="kpi-grid">
+        <div class="kpi-card red">
+          <div class="kpi-icon">📄</div>
+          <div class="kpi-label">Bekleyen Dilekçe</div>
+          <div class="kpi-value red">7</div>
+          <div class="trend up">↑ +3 bugün</div>
+        </div>
+        <div class="kpi-card blue">
+          <div class="kpi-icon">⚖️</div>
+          <div class="kpi-label">Aktif Dava</div>
+          <div class="kpi-value blue">23</div>
+          <div class="trend up">↑ +2 bu hafta</div>
+        </div>
+        <div class="kpi-card green">
+          <div class="kpi-icon">✅</div>
+          <div class="kpi-label">Kazanılan Dava</div>
+          <div class="kpi-value green">141</div>
+          <div class="trend up">%87 başarı oranı</div>
+        </div>
+        <div class="kpi-card orange">
+          <div class="kpi-icon">🚗</div>
+          <div class="kpi-label">Aktif Sürücü</div>
+          <div class="kpi-value orange">318</div>
+          <div class="trend up">↑ +14 bu ay</div>
+        </div>
+      </div>
+
+      <!-- CHARTS ROW -->
+      <div class="grid-2">
+
+        <!-- BAR CHART -->
+        <div class="card">
+          <div class="card-header">
+            <h3>📅 Aylık Dilekçe Trendi</h3>
+            <span style="font-size:0.75rem;color:var(--muted)">Son 7 ay</span>
+          </div>
+          <div class="card-body">
+            <div class="bar-chart">
+              <div class="bar-col">
+                <div class="bar" style="height:40%;background:var(--blue);opacity:0.5"></div>
+                <div class="bar-label">Ağu</div>
+              </div>
+              <div class="bar-col">
+                <div class="bar" style="height:55%;background:var(--blue);opacity:0.6"></div>
+                <div class="bar-label">Eyl</div>
+              </div>
+              <div class="bar-col">
+                <div class="bar" style="height:48%;background:var(--blue);opacity:0.7"></div>
+                <div class="bar-label">Eki</div>
+              </div>
+              <div class="bar-col">
+                <div class="bar" style="height:70%;background:var(--blue);opacity:0.8"></div>
+                <div class="bar-label">Kas</div>
+              </div>
+              <div class="bar-col">
+                <div class="bar" style="height:62%;background:var(--blue);opacity:0.9"></div>
+                <div class="bar-label">Ara</div>
+              </div>
+              <div class="bar-col">
+                <div class="bar" style="height:80%;background:var(--blue)"></div>
+                <div class="bar-label">Oca</div>
+              </div>
+              <div class="bar-col">
+                <div class="bar" style="height:90%;background:var(--green)"></div>
+                <div class="bar-label" style="color:var(--green);font-weight:700">Şub</div>
+              </div>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Geçmiş</div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Bu ay</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DONUT -->
+        <div class="card">
+          <div class="card-header">
+            <h3>🗂️ Dava Durumu Dağılımı</h3>
+          </div>
+          <div class="card-body">
+            <div class="donut-wrap">
+              <div class="donut"></div>
+              <div class="donut-labels">
+                <div class="donut-item"><div class="dot" style="background:var(--green)"></div><span>Kazanıldı</span><span class="pct" style="color:var(--green)">%36</span></div>
+                <div class="donut-item"><div class="dot" style="background:var(--blue)"></div><span>İncelemede</span><span class="pct" style="color:var(--blue)">%25</span></div>
+                <div class="donut-item"><div class="dot" style="background:var(--orange)"></div><span>Beklemede</span><span class="pct" style="color:var(--orange)">%17</span></div>
+                <div class="donut-item"><div class="dot" style="background:var(--red)"></div><span>Acil</span><span class="pct" style="color:var(--red)">%22</span></div>
+              </div>
+            </div>
+            <div style="margin-top:16px; padding: 12px; background: rgba(0,227,150,0.06); border-radius: 8px; border: 1px solid rgba(0,227,150,0.15);">
+              <div style="font-size:0.75rem;color:var(--muted)">Genel Başarı Oranı</div>
+              <div style="font-size:1.5rem;font-weight:700;color:var(--green)">%87.3</div>
+              <div style="font-size:0.7rem;color:var(--muted)">163 tamamlanan davadan 141 kazanım</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PETITIONS TABLE + ACTIVITY -->
+      <div class="grid-3-1">
+
+        <!-- TABLE -->
+        <div class="card">
+          <div class="card-header">
+            <h3>📋 Bekleyen Dilekçeler</h3>
+            <div style="display:flex;gap:8px;align-items:center">
+              <span class="status urgent">7 Acil</span>
+              <button class="btn btn-outline" style="padding:5px 12px;font-size:0.75rem">Tümünü Gör</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="petition-table">
+              <thead>
+                <tr>
+                  <th>Sürücü</th>
+                  <th>Sözleşme No</th>
+                  <th>Tarih</th>
+                  <th>Durum</th>
+                  <th>İşlem</th>
+                </tr>
+              </thead>
+              <tbody id="petitionTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ACTIVITY FEED -->
+        <div class="card">
+          <div class="card-header">
+            <h3>🔔 Son Aktiviteler</h3>
+            <div class="live-badge"><div class="live-dot"></div>Canlı</div>
+          </div>
+          <div class="card-body" style="padding:0 20px">
+            <div class="feed">
+              <div class="feed-item">
+                <div class="feed-icon red">🚨</div>
+                <div>
+                  <div class="feed-text"><b>Mehmet K.</b> çevirme bildirimi gönderdi</div>
+                  <div class="feed-time">2 dk önce · İstanbul / Kadıköy</div>
+                </div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-icon blue">📄</div>
+                <div>
+                  <div class="feed-text">Yeni PDF dilekçe yüklendi · <b>KR-2024-0187</b></div>
+                  <div class="feed-time">8 dk önce</div>
+                </div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-icon green">✅</div>
+                <div>
+                  <div class="feed-text"><b>Dava #0143</b> kazanıldı — ceza iptal edildi</div>
+                  <div class="feed-time">1 saat önce</div>
+                </div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-icon orange">🎙️</div>
+                <div>
+                  <div class="feed-text">Sesli asistan aktifleşti · <b>Ahmet S.</b></div>
+                  <div class="feed-time">1.5 saat önce · Beşiktaş</div>
+                </div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-icon blue">⚖️</div>
+                <div>
+                  <div class="feed-text">Av. Yılmaz duruşmaya giriyor · <b>Dava #0156</b></div>
+                  <div class="feed-time">2 saat önce</div>
+                </div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-icon red">📄</div>
+                <div>
+                  <div class="feed-text">Yeni PDF dilekçe · <b>KR-2024-0191</b></div>
+                  <div class="feed-time">3 saat önce</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOP DRIVERS -->
+      <div class="card">
+        <div class="card-header">
+          <h3>🏆 Sürücü Bazlı İstatistikler</h3>
+          <button class="btn btn-outline" style="padding:5px 12px;font-size:0.75rem">Tümünü Gör →</button>
+        </div>
+        <div class="card-body" style="padding:0">
+          <table class="petition-table">
+            <thead>
+              <tr>
+                <th>Sürücü</th>
+                <th>Toplam Çevirme</th>
+                <th>Dilekçe Sayısı</th>
+                <th>Kazanım</th>
+                <th>Başarı Oranı</th>
+                <th>Son Aktivite</th>
+              </tr>
+            </thead>
+            <tbody id="driverTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-box">
+    <span class="modal-close" onclick="closeModal()">✕</span>
+    <h3>📄 Dilekçe Detayı</h3>
+    <div id="modalContent"></div>
+    <div class="modal-actions">
+      <button class="btn btn-green" style="flex:1" onclick="closeModal()">✅ İncelemeye Al</button>
+      <button class="action-btn pdf" style="flex:1;padding:8px;font-size:0.8rem" onclick="closeModal()">📥 PDF İndir</button>
+      <button class="btn btn-outline" onclick="closeModal()">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBYArx0gnG2cJLGqCo5jNd4b-22GObygQo",
+  authDomain: "ortak-yol-driver.firebaseapp.com",
+  projectId: "ortak-yol-driver",
+  storageBucket: "ortak-yol-driver.firebasestorage.app",
+  messagingSenderId: "772761045864",
+  appId: "1:772761045864:web:081776d56a2b76bf1bc88576806e7090"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const ptbody = document.getElementById('petitionTable');
+const dtbody = document.getElementById('driverTable');
+
+// Real-time listener for Petitions
+db.collection('petitions').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
+  ptbody.innerHTML = '';
+  let pendingCount = 0;
+  
+  snapshot.forEach((doc) => {
+    const p = doc.data();
+    p.id = doc.id;
+    const date = p.createdAt ? p.createdAt.toDate().toLocaleDateString('tr-TR') : '...';
+    
+    if (p.status === 'pending_review' || p.status === 'urgent') pendingCount++;
+
+    const tr = document.createElement('tr');
+    tr.onclick = () => openModal(p);
+    
+    let statusClass = 'pending';
+    let statusLabel = 'Bekliyor';
+    if(p.status === 'review') { statusClass = 'review'; statusLabel = 'İncelemede'; }
+    if(p.status === 'urgent') { statusClass = 'urgent'; statusLabel = '⚡ Acil'; }
+    if(p.status === 'resolved') { statusClass = 'resolved'; statusLabel = 'Çözüldü'; }
+
+    tr.innerHTML = `
+      <td><div class="driver-info">
+        <div class="driver-avatar">${(p.driverName || 'S').substring(0,2).toUpperCase()}</div>
+        <div><div class="driver-name">${p.driverName || 'Sürücü'}</div><div class="driver-plate">ID: ${p.driverId.substring(0,8)}</div></div>
+      </div></td>
+      <td style="font-size:0.75rem;color:var(--muted)">${(p.rideId || 'N/A').substring(0,8)}</td>
+      <td style="font-size:0.75rem">${date}</td>
+      <td><span class="status ${statusClass}">${statusLabel}</span></td>
+      <td>
+        <button class="action-btn" onclick="event.stopPropagation();openModal(${JSON.stringify(p).replace(/"/g,'&quot;')})">Görüntüle</button>
+        <a href="${p.pdfUrl}" target="_blank" class="action-btn pdf" onclick="event.stopPropagation()">PDF</a>
+      </td>`;
+    ptbody.appendChild(tr);
+  });
+  
+  // Update KPI
+  document.querySelectorAll('.kpi-value')[0].innerText = pendingCount;
+});
+
+// Static Drivers data for display
+const drivers = [
+  { name:'Mehmet Koçak', initials:'MK', stops:8, petitions:6, wins:5, rate:83 },
+  { name:'Ali Rıza Demir', initials:'AR', stops:5, petitions:5, wins:5, rate:100 },
+  { name:'Fatma Şahin', initials:'FŞ', stops:4, petitions:3, wins:3, rate:100 },
+];
+
+drivers.forEach(d => {
+  const color = d.rate === 100 ? 'var(--green)' : d.rate >= 80 ? 'var(--blue)' : 'var(--orange)';
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><div class="driver-info">
+      <div class="driver-avatar">${d.initials}</div>
+      <div class="driver-name">${d.name}</div>
+    </div></td>
+    <td style="text-align:center">${d.stops}</td>
+    <td style="text-align:center">${d.petitions}</td>
+    <td style="text-align:center;color:var(--green);font-weight:600">${d.wins}</td>
+    <td>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="flex:1;background:var(--card2);border-radius:4px;height:6px;overflow:hidden">
+          <div style="width:${d.rate}%;height:100%;background:${color};border-radius:4px"></div>
+        </div>
+        <span style="font-size:0.75rem;color:${color};min-width:32px">%${d.rate}</span>
+      </div>
+    </td>
+    <td style="font-size:0.75rem;color:var(--muted)">Bugün</td>`;
+  dtbody.appendChild(tr);
+});
+
+function openModal(p) {
+  const map = { urgent:'⚡ Acil', pending_review:'⏳ Bekliyor', review:'🔍 İncelemede', resolved:'✅ Çözüldü' };
+  const date = p.createdAt ? p.createdAt.toDate().toLocaleDateString('tr-TR') : '...';
+  document.getElementById('modalContent').innerHTML = `
+    <div class="detail-row"><span class="detail-label">Dilekçe No</span><span class="detail-value">${p.id}</span></div>
+    <div class="detail-row"><span class="detail-label">Sürücü</span><span class="detail-value">${p.driverName}</span></div>
+    <div class="detail-row"><span class="detail-label">Sürüş ID</span><span class="detail-value">${p.rideId}</span></div>
+    <div class="detail-row"><span class="detail-label">Yükleme Tarihi</span><span class="detail-value">${date}</span></div>
+    <div class="detail-row"><span class="detail-label">Durum</span><span class="status ${p.status==='pending_review'?'pending':p.status}" style="font-size:0.8rem">${map[p.status]||p.status}</span></div>
+    <div class="detail-row"><span class="detail-label">Dayanak</span><span class="detail-value" style="font-size:0.75rem">TBK m.299 / Danıştay 8.D.</span></div>`;
+  document.getElementById('detailModal').classList.add('open');
+}
+function closeModal() { document.getElementById('detailModal').classList.remove('open'); }
+document.getElementById('detailModal').onclick = e => { if(e.target===e.currentTarget) closeModal(); }
+</script>
+</body>
+</html>
