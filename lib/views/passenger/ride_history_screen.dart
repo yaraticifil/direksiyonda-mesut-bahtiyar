@@ -4,6 +4,7 @@ import '../../controllers/auth_controller.dart';
 import '../../controllers/passenger_controller.dart';
 import '../../models/ride_model.dart';
 import '../../services/ride_service.dart';
+import 'ride_completion_screen.dart';
 
 class RideHistoryScreen extends StatefulWidget {
   const RideHistoryScreen({super.key});
@@ -64,10 +65,16 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
   Widget _rideCard(Ride ride) {
     final config = SegmentConfig.get(ride.segment);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
+    return GestureDetector(
+      onTap: () {
+        if (ride.status == RideStatus.completed) {
+          Get.to(() => RideCompletionScreen(ride: ride));
+        }
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
         color: const Color(0xFF2C2C2C),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: Colors.grey[800]!),
@@ -141,6 +148,7 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
           ),
         ],
       ),
+    ),
     );
   }
 

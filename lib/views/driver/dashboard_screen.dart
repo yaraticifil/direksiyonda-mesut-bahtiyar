@@ -4,8 +4,6 @@ import 'package:intl/intl.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/driver_controller.dart';
 import '../../models/payout_model.dart';
-import '../payout/payout_request_screen.dart';
-import '../payout/payout_history_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -353,7 +351,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 'PARA\nÇEK',
                 Icons.account_balance_wallet,
                 Colors.green,
-                () => Get.to(() => const PayoutRequestScreen()),
+                () => Get.toNamed('/payout-request'),
               ),
             ),
             const SizedBox(width: 10),
@@ -362,7 +360,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 'ÖDEME\nGEÇMİŞİ',
                 Icons.history,
                 Colors.purple,
-                () => Get.to(() => const PayoutHistoryScreen()),
+                () => Get.toNamed('/payout-history'),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        // Adil Kazanç — tek buton satırı
+        Row(
+          children: [
+            Expanded(
+              child: _buildActionButton(
+                'ADİL KAZANÇ',
+                Icons.savings,
+                const Color(0xFFFFD700),
+                () => Get.toNamed('/fair-earnings'),
               ),
             ),
           ],
@@ -429,7 +441,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             ),
             TextButton(
-              onPressed: () => Get.to(() => const PayoutHistoryScreen()),
+              onPressed: () => Get.toNamed('/payout-history'),
               child: const Text(
                 'Tümünü Gör',
                 style: TextStyle(

@@ -17,6 +17,8 @@ import '../views/passenger/passenger_home_screen.dart';
 import '../views/passenger/ride_history_screen.dart';
 import '../views/driver/fair_earnings_screen.dart';
 import '../views/driver/ride_detail_screen.dart';
+import '../views/payout/payout_request_screen.dart';
+import '../views/payout/payout_history_screen.dart';
 
 class AppPages {
   static const initial = '/';
@@ -92,6 +94,16 @@ class AppPages {
     GetPage(
       name: '/ride-detail',
       page: () => const RideDetailScreen(),
+      binding: DriverBinding(),
+    ),
+    GetPage(
+      name: '/payout-request',
+      page: () => const PayoutRequestScreen(),
+      binding: DriverBinding(),
+    ),
+    GetPage(
+      name: '/payout-history',
+      page: () => const PayoutHistoryScreen(),
       binding: DriverBinding(),
     ),
   ];

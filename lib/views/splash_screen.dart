@@ -35,7 +35,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   Future<void> _checkAuthAndRedirect() async {
-    await Future.delayed(const Duration(seconds: 3));
+    // En az 1.2 sn splash göster (logo okunabilsin), sonra auth kontrolü
+    await Future.delayed(const Duration(milliseconds: 1200));
     await authController.checkAuthAndRedirect();
   }
 
