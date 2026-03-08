@@ -1,0 +1,422 @@
+﻿Compiling lib\main.dart for the Web...                          
+flutter : Wasm dry run su
+cceeded. Consider buildin
+g and testing your applic
+ation with the `--wasm` f
+lag. See docs for more in
+fo: https://docs.flutter.
+dev/platform-integration/
+web/wasm
+At line:1 char:1
++ flutter build web --rel
+ease *>&1 | Out-File -Fil
+ePath build_err.txt - ...
++ ~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~
+    + CategoryInfo       
+       : NotSpecified:   
+  (Wasm dry run su...r   
+ ation/web/wasm:Strin    
+g) [], RemoteExcepti    o
+n
+    + FullyQualifiedErro 
+   rId : NativeCommandE  
+  rror
+ 
+Use --no-wasm-dry-run to 
+disable these warnings.
+Target dart2js failed: Pr
+ocessException: Process e
+xited abnormally with exi
+t code 1:
+lib/routes/app_pages.dart
+:46:25:
+Error: Couldn't find cons
+tructor 'AdminAuditScreen
+'.
+      page: () => const A
+dminAuditScreen(),
+                        ^
+^^^^^^^^^^^^^^^
+lib/views/driver/dashboar
+d_screen.dart:310:41:
+Error: The method 'toggle
+OnlineStatus' isn't defin
+ed for the type 'DriverCo
+ntroller'.
+ - 'DriverController' is 
+from 'package:driver_app/
+controllers/driver_contro
+ller.dart' ('lib/controll
+ers/driver_controller.dar
+t').
+          onTap: () => dr
+iverController.toggleOnli
+neStatus(),
+                         
+               ^^^^^^^^^^
+^^^^^^^^
+lib/views/admin/admin_das
+hboard_screen.dart:266:10
+5:
+Error: The getter 'uid' i
+sn't defined for the type
+ 'Driver'.
+ - 'Driver' is from 'pack
+age:driver_app/models/dri
+ver_model.dart' ('lib/mod
+els/driver_model.dart').
+              Expanded(ch
+ild: ElevatedButton(onPre
+ssed: () => adminControll
+er.updateDriverStatus(dri
+ver.uid, DriverStatus.app
+roved), style: ElevatedBu
+tton.styleFrom(background
+Color: AppColors.success,
+ foregroundColor: Colors.
+white), child: const Text
+('ONAYLA'))),
+                         
+                         
+                         
+               ^^^
+lib/views/admin/admin_das
+hboard_screen.dart:268:10
+5:
+Error: The getter 'uid' i
+sn't defined for the type
+ 'Driver'.
+ - 'Driver' is from 'pack
+age:driver_app/models/dri
+ver_model.dart' ('lib/mod
+els/driver_model.dart').
+              Expanded(ch
+ild: ElevatedButton(onPre
+ssed: () => adminControll
+er.updateDriverStatus(dri
+ver.uid, DriverStatus.rej
+ected), style: ElevatedBu
+tton.styleFrom(background
+Color: AppColors.error, f
+oregroundColor: Colors.wh
+ite), child: const Text('
+REDDET'))),
+                         
+                         
+                         
+               ^^^
+lib/views/admin/admin_das
+hboard_screen.dart:284:53
+:
+Error: Member not found: 
+'suspended'.
+      case DriverStatus.r
+ejected: case DriverStatu
+s.suspended: return AppCo
+lors.error;
+                         
+                         
+  ^^^^^^^^^
+lib/views/passenger/ride_
+history_screen.dart:128:4
+1:
+Error: The getter 'person
+Count' isn't defined for 
+the type 'Ride'.
+ - 'Ride' is from 'packag
+e:driver_app/models/ride_
+model.dart' ('lib/models/
+ride_model.dart').
+              _miniInfo('
+Ki├à┼©i', '${ride.personC
+ount}'),
+                         
+               ^^^^^^^^^^
+^
+lib/views/passenger/ride_
+history_screen.dart:132:2
+8:
+Error: The getter 'person
+Count' isn't defined for 
+the type 'Ride'.
+ - 'Ride' is from 'packag
+e:driver_app/models/ride_
+model.dart' ('lib/models/
+ride_model.dart').
+                  if (rid
+e.personCount > 1) Text('
+Toplam: ├óÔÇÜ┬║${ride.gro
+ssTotal.toStringAsFixed(0
+)}', style: TextStyle(col
+or: Colors.grey[500], fon
+tSize: 9)),
+                         
+  ^^^^^^^^^^^
+lib/views/passenger/ride_
+history_screen.dart:134:2
+6:
+Error: The getter 'person
+Count' isn't defined for 
+the type 'Ride'.
+ - 'Ride' is from 'packag
+e:driver_app/models/ride_
+model.dart' ('lib/models/
+ride_model.dart').
+                    ride.
+personCount > 1 ? '├óÔÇÜ┬
+║${ride.perPersonFee.toSt
+ringAsFixed(0)} / ki├à┼©i
+' : '├óÔÇÜ┬║${ride.grossT
+otal.toStringAsFixed(0)}'
+,
+                         
+^^^^^^^^^^^
+lib/views/passenger/ride_
+history_screen.dart:134:5
+3:
+Error: The getter 'perPer
+sonFee' isn't defined for
+ the type 'Ride'.
+ - 'Ride' is from 'packag
+e:driver_app/models/ride_
+model.dart' ('lib/models/
+ride_model.dart').
+                    ride.
+personCount > 1 ? '├óÔÇÜ┬
+║${ride.perPersonFee.toSt
+ringAsFixed(0)} / ki├à┼©i
+' : '├óÔÇÜ┬║${ride.grossT
+otal.toStringAsFixed(0)}'
+,
+                         
+                         
+  ^^^^^^^^^^^^
+lib/controllers/driver_co
+ntroller.dart:229:48:
+Error: Too few positional
+ arguments: 2 required, 1
+ given.
+        uploadTask = stor
+ageRef.putFile(io.File(im
+age.path), metadata);
+                         
+                      ^
+org-dartlang-sdk:///dart-
+sdk/lib/html/dart2js/html
+_dart2js.dart:
+Info: Found this candidat
+e, but the arguments don'
+t match.
+lib/views/driver/dashboar
+d_screen.dart:598:13:
+Error: The type 'PayoutSt
+atus' is not exhaustively
+ matched by the switch ca
+ses since it doesn't matc
+h 'PayoutStatus.transferr
+ing'.
+ - 'PayoutStatus' is from
+ 'package:driver_app/mode
+ls/payout_model.dart' ('l
+ib/models/payout_model.da
+rt').
+    switch (status) {
+            ^
+lib/views/driver/dashboar
+d_screen.dart:609:13:
+Error: The type 'PayoutSt
+atus' is not exhaustively
+ matched by the switch ca
+ses since it doesn't matc
+h 'PayoutStatus.transferr
+ing'.
+ - 'PayoutStatus' is from
+ 'package:driver_app/mode
+ls/payout_model.dart' ('l
+ib/models/payout_model.da
+rt').
+    switch (status) {
+            ^
+lib/views/payout/payout_h
+istory_screen.dart:198:13
+:
+Error: The type 'PayoutSt
+atus' is not exhaustively
+ matched by the switch ca
+ses since it doesn't matc
+h 'PayoutStatus.transferr
+ing'.
+ - 'PayoutStatus' is from
+ 'package:driver_app/mode
+ls/payout_model.dart' ('l
+ib/models/payout_model.da
+rt').
+    switch (status) {
+            ^
+lib/views/payout/payout_h
+istory_screen.dart:209:13
+:
+Error: The type 'PayoutSt
+atus' is not exhaustively
+ matched by the switch ca
+ses since it doesn't matc
+h 'PayoutStatus.transferr
+ing'.
+ - 'PayoutStatus' is from
+ 'package:driver_app/mode
+ls/payout_model.dart' ('l
+ib/models/payout_model.da
+rt').
+    switch (status) {
+            ^
+Error: Compilation failed
+.
+  Command: C:\Users\Lenov
+o\flutter\bin\cache\dart-
+sdk\bin\dart.exe compile 
+js --platform-binaries=C:
+\Users\Lenovo\flutter\bin
+\cache\flutter_web_sdk\ke
+rnel --invoker=flutter_to
+ol -Ddart.vm.product=true
+ -DFLUTTER_VERSION=3.38.9
+ -DFLUTTER_CHANNEL=stable
+ -DFLUTTER_GIT_URL=https:
+//github.com/flutter/flut
+ter.git -DFLUTTER_FRAMEWO
+RK_REVISION=67323de285 -D
+FLUTTER_ENGINE_REVISION=5
+87c18f873 -DFLUTTER_DART_
+VERSION=3.10.8 -DFLUTTER_
+WEB_USE_SKIA=true -DFLUTT
+ER_WEB_USE_SKWASM=false -
+DFLUTTER_WEB_CANVASKIT_UR
+L=https://www.gstatic.com
+/flutter-canvaskit/587c18
+f873b8ab57330422bce090474
+20d9c7f42/ --native-null-
+assertions --no-source-ma
+ps -O4 --minify -o C:\Use
+rs\Lenovo\Desktop\projele
+r\dijital-mucadele\ORTAK_
+YOL_FINAL\.dart_tool\flut
+ter_build\ba396c86551b05f
+f2b1914470a618647\app.dil
+l --packages=C:\Users\Len
+ovo\Desktop\projeler\diji
+tal-mucadele\ORTAK_YOL_FI
+NAL\.dart_tool\package_co
+nfig.json --cfe-only C:\U
+sers\Lenovo\Desktop\proje
+ler\dijital-mucadele\ORTA
+K_YOL_FINAL\.dart_tool\fl
+utter_build\ba396c86551b0
+5ff2b1914470a618647\main.
+dart
+#0      RunResult.throwEx
+ception (package:flutter_
+tools/src/base/process.da
+rt:153:5)
+#1      _DefaultProcessUt
+ils.run (package:flutter_
+tools/src/base/process.da
+rt:379:19)
+<asynchronous suspension>
+#2      Dart2JSTarget.bui
+ld (package:flutter_tools
+/src/build_system/targets
+/web.dart:207:5)
+<asynchronous suspension>
+#3      _BuildInstance._i
+nvokeInternal (package:fl
+utter_tools/src/build_sys
+tem/build_system.dart:895
+:9)
+<asynchronous suspension>
+#4      Future.wait.<anon
+ymous closure> (dart:asyn
+c/future.dart:546:21)
+<asynchronous suspension>
+#5      _BuildInstance.in
+vokeTarget (package:flutt
+er_tools/src/build_system
+/build_system.dart:833:32
+)
+<asynchronous suspension>
+#6      Future.wait.<anon
+ymous closure> (dart:asyn
+c/future.dart:546:21)
+<asynchronous suspension>
+#7      _BuildInstance.in
+vokeTarget (package:flutt
+er_tools/src/build_system
+/build_system.dart:833:32
+)
+<asynchronous suspension>
+#8      FlutterBuildSyste
+m.build (package:flutter_
+tools/src/build_system/bu
+ild_system.dart:653:16)
+<asynchronous suspension>
+#9      WebBuilder.buildW
+eb (package:flutter_tools
+/src/web/compile.dart:94:
+34)
+<asynchronous suspension>
+#10     BuildWebCommand.r
+unCommand (package:flutte
+r_tools/src/commands/buil
+d_web.dart:296:5)
+<asynchronous suspension>
+#11     FlutterCommand.ru
+n.<anonymous closure> (pa
+ckage:flutter_tools/src/r
+unner/flutter_command.dar
+t:1559:27)
+<asynchronous suspension>
+#12     AppContext.run.<a
+nonymous closure> (packag
+e:flutter_tools/src/base/
+context.dart:154:19)
+<asynchronous suspension>
+#13     CommandRunner.run
+Command (package:args/com
+mand_runner.dart:212:13)
+<asynchronous suspension>
+#14     FlutterCommandRun
+ner.runCommand.<anonymous
+ closure> (package:flutte
+r_tools/src/runner/flutte
+r_command_runner.dart:487
+:9)
+<asynchronous suspension>
+#15     AppContext.run.<a
+nonymous closure> (packag
+e:flutter_tools/src/base/
+context.dart:154:19)
+<asynchronous suspension>
+#16     FlutterCommandRun
+ner.runCommand (package:f
+lutter_tools/src/runner/f
+lutter_command_runner.dar
+t:422:5)
+<asynchronous suspension>
+#17     run.<anonymous cl
+osure>.<anonymous closure
+> (package:flutter_tools/
+runner.dart:104:11)
+<asynchronous suspension>
+#18     AppContext.run.<a
+nonymous closure> (packag
+e:flutter_tools/src/base/
+context.dart:154:19)
+<asynchronous suspension>
+#19     main (package:flu
+tter_tools/executable.dar
+t:103:3)
+<asynchronous suspension>
+
+Compiling lib\main.dart for the Web...                             46,2s
+Error: Failed to compile 
+application for the Web.
