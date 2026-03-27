@@ -3,169 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ortak Yol - Sürücü ve Yolcu Dostu</title>
+    <title>Direksiyonda | Ortak Yol • Stratejik Ortaklık Landing</title>
+    <meta name="description" content="Direksiyonda (Ortak Yol) için yatırımcı ve hukuk ortaklığı odaklı tanıtım sayfası.">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="assets/icon.png">
 </head>
 <body>
-    <div class="overlay"></div>
-    
-    <header>
-        <nav>
-            <div class="logo">
-                <img src="assets/icon.png" alt="Ortak Yol Logo">
-                <span>Ortak Yol</span>
+    <header class="header">
+        <nav class="nav container">
+            <a class="brand" href="#home" aria-label="Direksiyonda ana sayfa">
+                <img src="assets/icon.png" alt="Direksiyonda logosu">
+                <div>
+                    <strong>Direksiyonda</strong>
+                    <span>Ortak Yol</span>
+                </div>
+            </a>
+            <div class="nav-links">
+                <a href="#value">Model</a>
+                <a href="#legal">Hukuki Çerçeve</a>
+                <a href="#partners">Ortaklık</a>
+                <a href="#contact" class="btn btn-small">Toplantı Talebi</a>
             </div>
-            <!-- <ul class="nav-links">
-                <li><a href="#features">Özellikler</a></li>
-                <li><a href="#download" class="btn-nav">İndir</a></li>
-            </ul> -->
         </nav>
     </header>
 
-    <main class="hero">
-        <div class="hero-content">
-            <div class="badge">Yeni Sürüm Yayında</div>
-            <h1>Ortak Yol</h1>
-            <p class="tagline">Sürücüyü Koruyan, Yolcuyu Güvenceye Alan <br> Teknolojik Ulaşım Altyapısı</p>
-            
-            <div class="download-buttons" id="download">
-                <a href="OrtakYol.apk" class="btn-download android" download>
-                    <i class="fab fa-android"></i>
-                    <div class="btn-text">
-                        <small>Android İçin</small>
-                        <span>Hemen İndir</span>
-                    </div>
-                </a>
-                
-                <a href="#" class="btn-download ios disabled" onclick="alert('iOS versiyonumuz çok yakında App Store\'da!'); return false;">
-                    <i class="fab fa-apple"></i>
-                    <div class="btn-text">
-                        <small>iOS İçin</small>
-                        <span>App Store</span>
-                    </div>
-                </a>
+    <main id="home">
+        <section class="hero container">
+            <div class="hero-copy">
+                <p class="eyebrow">Yatırımcı & Avukat Partner Landing</p>
+                <h1>Türkiye'de yasal zeminde çalışan yeni nesil <span>şoförlü araç kiralama altyapısı</span>.</h1>
+                <p class="hero-text">
+                    Direksiyonda, bağımsız sürücüleri ve yolcuları TBK temelli sözleşme akışı ile bir araya getirir.
+                    Hedefimiz yalnızca büyümek değil; doğru yatırımcılar ve güçlü hukuk ortaklarıyla güvenilir bir ulaşım standardı oluşturmaktır.
+                </p>
+                <div class="hero-actions">
+                    <a href="#contact" class="btn">Yatırımcı Sunumu Talep Et</a>
+                    <a href="#film" class="btn btn-ghost">Tanıtım Filmini İzle</a>
+                </div>
+                <ul class="hero-metrics" aria-label="öne çıkan metrikler">
+                    <li><strong>6 TL/km</strong><span>şeffaf birim fiyat</span></li>
+                    <li><strong>%12</strong><span>platform komisyonu</span></li>
+                    <li><strong>100%</strong><span>Firebase tabanlı altyapı</span></li>
+                </ul>
             </div>
-            <p class="version-info">Versiyon 1.0.0 • Android 5.0+</p>
-        </div>
-        
-        <div class="hero-image">
-             <img src="assets/icon.png" alt="App Preview" class="app-mockup">
-        </div>
+            <div class="hero-card" role="presentation">
+                <h3>Stratejik Tez</h3>
+                <p>“Sadece bir uygulama değil; hukuki koruma + operasyon + teknoloji üçlüsünü birleştiren sürdürülebilir bir model.”</p>
+                <div class="mini-grid">
+                    <div>
+                        <small>Operasyon</small>
+                        <strong>Sürücü onboarding</strong>
+                    </div>
+                    <div>
+                        <small>Risk Yönetimi</small>
+                        <strong>Ceza rapor akışı</strong>
+                    </div>
+                    <div>
+                        <small>Uyum</small>
+                        <strong>TBK sözleşme izi</strong>
+                    </div>
+                    <div>
+                        <small>Gelir</small>
+                        <strong>Adil fiyat modeli</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="film" class="section section-film">
+            <div class="container">
+                <div class="section-head">
+                    <p class="eyebrow">Tanıtım Filmi</p>
+                    <h2>Yatırımcı versiyonu: neden şimdi, neden bu model?</h2>
+                </div>
+                <div class="video-panel">
+                    <video controls preload="metadata" poster="assets/icon.png" aria-label="Direksiyonda tanıtım filmi önizlemesi">
+                        <source src="tanitim-filmi.mp4" type="video/mp4">
+                        Tarayıcınız video oynatmayı desteklemiyor.
+                    </video>
+                    <div class="video-note">
+                        <h3>Film Akışı (Önerilen)</h3>
+                        <ol>
+                            <li>Pazar problemi: Güven, yasal belirsizlik, gelir adaleti.</li>
+                            <li>Direksiyonda çözümü: TBK tabanlı sözleşmeli akış + canlı takip.</li>
+                            <li>Hukuki kalkan: ceza raporu, dijital kimlik, Q&A modülü.</li>
+                            <li>Ortaklık çağrısı: sermaye + hukuk + kurumsal büyüme planı.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="value" class="section">
+            <div class="container">
+                <div class="section-head">
+                    <p class="eyebrow">Yatırım Tezi</p>
+                    <h2>Doğru ortakların ilgisini çekecek 4 temel değer</h2>
+                </div>
+                <div class="cards grid-4">
+                    <article class="card">
+                        <h3>Yasal Model</h3>
+                        <p>Taşıma faaliyeti, şoförlü araç kiralama kapsamında net şekilde tanımlanır ve belgelenir.</p>
+                    </article>
+                    <article class="card">
+                        <h3>Öngörülebilir Gelir</h3>
+                        <p>Sabit birim fiyat yaklaşımıyla sürücü ve yolcu için şeffaf, denetlenebilir bir ekonomik model sunulur.</p>
+                    </article>
+                    <article class="card">
+                        <h3>Operasyonel Dayanıklılık</h3>
+                        <p>Firestore snapshot yapısı sayesinde bağlantı kesintilerinde süreç kaldığı yerden devam eder.</p>
+                    </article>
+                    <article class="card">
+                        <h3>Hukuk + Teknoloji Sinerjisi</h3>
+                        <p>Sadece yazılım değil; avukat yönlendirmeli savunma protokolleriyle sahada gerçek koruma.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="legal" class="section section-contrast">
+            <div class="container two-col">
+                <div>
+                    <p class="eyebrow">Hukuki Çerçeve</p>
+                    <h2>Doğru hukuk partneri için net sorumluluk alanları</h2>
+                    <p>
+                        Hukuk ortaklarımızdan beklentimiz yalnızca kriz yönetimi değil, ürünün merkezinde yer alan yasal mimariyi birlikte güçlendirmektir.
+                        Süreç; sözleşme tasarımı, saha protokolü, itiraz yönetimi ve içtihat takibi ile bütünleşik ilerler.
+                    </p>
+                </div>
+                <ul class="checklist">
+                    <li><strong>Sözleşme Standardizasyonu:</strong> Yolcu/sürücü metinlerinin güncel mevzuata göre revizyonu.</li>
+                    <li><strong>Operasyonel Savunma:</strong> Çevirme anı akışı ve tutanak şerhi protokollerinin denetlenmesi.</li>
+                    <li><strong>Uyuşmazlık Yönetimi:</strong> Bölgesel vakaların sınıflandırılması ve emsal karar havuzu.</li>
+                    <li><strong>Kurumsal Uyum:</strong> KVKK, platform politikaları ve denetim loglarının periyodik gözden geçirilmesi.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="partners" class="section">
+            <div class="container">
+                <div class="section-head">
+                    <p class="eyebrow">Aradığımız Ortaklar</p>
+                    <h2>“Paradan fazlasını” getiren stratejik partner profili</h2>
+                </div>
+                <div class="cards grid-3">
+                    <article class="card">
+                        <h3>Stratejik Yatırımcı</h3>
+                        <p>Regülasyon, mobil pazar ve saha operasyonu bilen; uzun vadeli ölçeklenmeyi hedefleyen ortak.</p>
+                    </article>
+                    <article class="card">
+                        <h3>Hukuk Ekosistemi</h3>
+                        <p>Teknoloji hukuku, idare hukuku ve ticari uyuşmazlık deneyimi güçlü avukat/ekip partneri.</p>
+                    </article>
+                    <article class="card">
+                        <h3>Kurumsal Ağ Sağlayıcı</h3>
+                        <p>Filo, sigorta, finans ve yerel paydaş bağlantıları ile büyümeyi hızlandıran iş ortağı.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="section section-cta">
+            <div class="container cta-box">
+                <div>
+                    <p class="eyebrow">Birlikte İnşa Edelim</p>
+                    <h2>Doğru ortak olduğunuzu düşünüyorsanız, ekibimizle doğrudan görüşün.</h2>
+                    <p>Yatırım dokümanı, hukuki model paketi ve ürün yol haritası talep eden partnerlere özel paylaşılır.</p>
+                </div>
+                <div class="cta-actions">
+                    <a class="btn" href="mailto:ortaklik@direksiyonda.app?subject=Direksiyonda%20Stratejik%20Ortaklik%20Talebi">ortaklik@direksiyonda.app</a>
+                    <a class="btn btn-ghost" href="tel:+908500000000">+90 850 000 00 00</a>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <!-- Tanıtım Bölümü -->
-    <section class="intro-section">
-        <div class="intro-content">
-            <h2>Ortak Yol Nedir?</h2>
-            <p>Ortak Yol, sürücüler ve yolcuları güvenli, şeffaf ve yasal şekilde bir araya getiren yenilikçi bir ulaşım platformudur. Mobil teknoloji ile hukuki koruma ve 7/24 avukat desteğini birleştirerek, her seyahati güvenli hale getiririz.</p>
-        </div>
-    </section>
-
-    <section id="features" class="features">
-        <h2 style="text-align: center; margin-bottom: 3rem;">Başlıca Özellikler</h2>
-        <div class="feature-card">
-            <i class="fas fa-shield-alt"></i>
-            <h3>🔐 Hukuki Koruma</h3>
-            <p>6098 Türk Borçlar Kanunu'na uygun sözleşmeler. Resmi hukuki dokümanlar ve e-Arşiv faturalandırma.</p>
-        </div>
-        <div class="feature-card">
-            <i class="fas fa-phone"></i>
-            <h3>📞 Avukat Desteği</h3>
-            <p>Gün içinde herhangi bir hukuki sorun? 7/24 nöbetçi avukat hattımız size yardımcı olmaya hazır.</p>
-        </div>
-        <div class="feature-card">
-            <i class="fas fa-map-location-dot"></i>
-            <h3>📍 Gerçek Zamanlı Takip</h3>
-            <p>GPS uydu takibi sayesinde güvenli seyahat. Her moment kontrol altında.</p>
-        </div>
-        <div class="feature-card">
-            <i class="fas fa-wallet"></i>
-            <h3>💰 Şeffaf Fiyatlandırma</h3>
-            <p>Sürpriz ücret yok. Sürücü ve yolcu için adil ve dengeli fiyatlandırma sistemi.</p>
-        </div>
-        <div class="feature-card">
-            <i class="fas fa-user-check"></i>
-            <h3>✓ Doğrulanmış Kimlikler</h3>
-            <p>Tüm sürücüler ve yolcular kimlik doğrulamsından geçer. Güvenliğiniz bizim önceliğimiz.</p>
-        </div>
-        <div class="feature-card">
-            <i class="fas fa-receipt"></i>
-            <h3>📄 Dijital Belgelendirme</h3>
-            <p>Sözleşme, fatura ve yolculuk detaylarınız QR kod ile anında ulaşılabilir.</p>
-        </div>
-    </section>
-
-    <!-- Nasıl Çalışır Bölümü -->
-    <section class="how-it-works">
-        <h2>Nasıl Çalışır?</h2>
-        <div class="steps">
-            <div class="step">
-                <div class="step-number">1</div>
-                <h4>İndirin</h4>
-                <p>Telefonunuza Ortak Yol uygulamasını yükleyin</p>
-            </div>
-            <div class="step">
-                <div class="step-number">2</div>
-                <h4>Kaydolun</h4>
-                <p>Kimlik doğrulamsından geçerek hesap açın</p>
-            </div>
-            <div class="step">
-                <div class="step-number">3</div>
-                <h4>Bağlantı Kurun</h4>
-                <p>Sürücü ya da yolcu olarak platform kullanmaya başlayın</p>
-            </div>
-            <div class="step">
-                <div class="step-number">4</div>
-                <h4>Güvenli Seyahat</h4>
-                <p>Hukuki koruma ile huzurlu yolculuk yapın</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Sistem Gereksinimleri -->
-    <section class="requirements">
-        <h2>Sistem Gereksinimleri</h2>
-        <div class="requirements-content">
-            <div class="req-box">
-                <h4>📱 Android</h4>
-                <ul>
-                    <li>Sürüm: Android 5.0 (API 21) ve üstü</li>
-                    <li>RAM: Minimum 1.5 GB</li>
-                    <li>Depolama: En az 100 MB</li>
-                    <li>İnternet: WiFi veya 3G+ bağlantısı</li>
-                </ul>
-            </div>
-            <div class="req-box">
-                <h4>🐧 Konumlandırma</h4>
-                <ul>
-                    <li>GPS etkinleştirilmiş olmalı</li>
-                    <li>Konum izni verilmiş olmalı</li>
-                    <li>Uydu sinyali açık olmalı</li>
-                </ul>
-            </div>
-        </div>
-    </section>
-
-    <!-- Yasal ve Güvenlik Bilgileri -->
-    <section class="legal-section">
-        <h2>Yasal Bilgiler</h2>
-        <div class="legal-content">
-            <p><strong>Telif Hakkı:</strong> © 2026 Ortak Yol. Tüm hakları saklıdır.</p>
-            <p><strong>Yasal Statü:</strong> Bu platform 6098 sayılı Türk Borçlar Kanunu'na uygun olarak faaliyet göstermektedir. Her işlem yasal sözleşme ile belgelendirilir.</p>
-            <p><strong>Gizlilik:</strong> Tüm kişisel veriler şifreli ve güvenli sunucularda saklanır. KVKK'na tamamen uyumlu veri yönetimi.</p>
-            <p><strong>Hukuki Destek:</strong> Her anlaşmazlıkta 7/24 nöbetçi avukat hattı açılmaktadır → <strong>📞 0850 XXX XX XX</strong></p>
-        </div>
-    </section>
-
-    <footer>
-        <p>&copy; 2026 Ortak Yol. Tüm hakları saklıdır.</p>
-        <div class="social-links">
-            <a href="#"><i class="fab fa-instagram"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-linkedin"></i></a>
+    <footer class="footer">
+        <div class="container footer-inner">
+            <p>© 2026 Direksiyonda (Ortak Yol). Tüm hakları saklıdır.</p>
+            <p>TBK tabanlı özel kiralama modeli • Yatırımcı ve hukuk partner sunumu</p>
         </div>
     </footer>
 </body>

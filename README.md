@@ -58,6 +58,11 @@ lib/
 └── firebase_options.dart # Firebase configuration
 ```
 
+## Product Documentation
+
+- Turkish architecture and function list: [`docs/proje-mimari-fonksiyon-listesi.md`](docs/proje-mimari-fonksiyon-listesi.md)
+- Investor/legal partner landing page: [`landing_page/index.html`](landing_page/index.html)
+
 ## Getting Started
 
 ### Prerequisites
