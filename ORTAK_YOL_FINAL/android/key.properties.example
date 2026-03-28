@@ -1,7 +1,8 @@
-# Copy this file to android/key.properties (DO NOT COMMIT key.properties to VCS)
-# Adjust paths/passwords/alias as you choose.
-storePassword=your_store_password
-keyPassword=your_key_password
-keyAlias=your_key_alias
-# Path to the keystore file relative to the project root, e.g. "app/my-release-key.jks"
-storeFile=app/my-release-key.jks
+# This is an example of the key.properties file required for release builds.
+# DO NOT commit the actual key.properties or the keystore (.jks) file!
+# Rename this file to "key.properties" and update it with your actual keystore details.
+
+storePassword=YOUR_STORE_PASSWORD
+keyPassword=YOUR_KEY_PASSWORD
+keyAlias=YOUR_KEY_ALIAS
+storeFile=../YOUR_KEYSTORE_FILE.jks
